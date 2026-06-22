@@ -1,0 +1,105 @@
+.container {
+  position: relative;
+  display: inline-block;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid #3c3f45;
+  border-radius: 8px;
+  padding: 4px 8px;
+  color: #d1d2d3;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1.2;
+  transition: 0.2s ease;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.trigger:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.avatar {
+  border-radius: 4px;
+}
+
+.username {
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  min-width: 140px;
+  background: transparent;
+  backdrop-filter: blur(8px);
+  border: 1px solid #3c3f45;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  padding: 2px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdownButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 4px 6px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  background: transparent;
+  color: #e5e6e8;
+}
+
+.dropdownButton:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.logoutButton {
+  composes: dropdownButton;
+  color: #c7d2fe;
+  background: #1e1b4b;
+  border: 1px solid #4f46e5;
+}
+
+.logoutButton:hover {
+  background: #312e81;
+}
+
+.deleteButton {
+  composes: dropdownButton;
+  color: #ffb4c0;
+  background: #2a1a20;
+  border: 1px solid rgba(255, 92, 119, 0.25);
+}
+
+.deleteButton:hover {
+  background: #351c26;
+}
+
+@media (max-width: 760px) {
+  .trigger {
+    padding: 4px;
+    font-size: 12px;
+  }
+
+  .username {
+    max-width: 88px;
+  }
+}
