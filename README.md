@@ -47,3 +47,4 @@ The application uses a headless architecture because the backend and frontend ar
 ![Screenshot 4](https://github.com/CodeHorizon0/LightCloud/blob/main/screenshots/4.png)
 ![Screenshot 5](https://github.com/CodeHorizon0/LightCloud/blob/main/screenshots/5.png)
 ![Screenshot 6](https://github.com/CodeHorizon0/LightCloud/blob/main/screenshots/6.png)
+![Screenshot 7](https://github.com/CodeHorizon0/LightCloud/blob/main/screenshots/7.png)
