@@ -2,6 +2,7 @@
 LightCloud - open source cloud storage writen on **fastapi** &amp; **react**. 
 
 > [!WARNING]
+> Создано в рамках индивидуального проекта, не используйте это в продакшн среде.
 > This project was completed as part of a course project and is not recommended for use in a production environment until it has been significantly improved.
 
 ## Web app Architecture
