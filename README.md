@@ -8,19 +8,19 @@ LightCloud - open source cloud storage writen on **fastapi** &amp; **react**.
 The application uses a headless architecture because the backend and frontend are separated. However, you can always build the frontend using Vite and add it as an HTMLResponse to the server code.
 
 ## Current Features
-JWT Account authorization
+1.JWT Account authorization
 
-Real time capabilities - synchronization of file metadata with the client via SSE
+2.Real time capabilities - synchronization of file metadata with the client via SSE
 
-Multipart file upload to the server
+3.Multipart file upload to the server
 
-Selective compression based on file type analysis
+4.Selective compression based on file type analysis
 
-Selective preview of files when possible
+5.Selective preview of files when possible
 
-Downloading and deleting files
+6.Downloading and deleting files
 
-Adaptive UI design for PCs and phones
+7.Adaptive UI design for PCs and phones
 
 ## Planned Features
 
