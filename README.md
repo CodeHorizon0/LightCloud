@@ -40,6 +40,8 @@ The application uses a headless architecture because the backend and frontend ar
 
 7.Vulnerability fixes and code refactoring
 
+8.File sharing
+
 ## Screenshots
 ![Screenshot 1](https://github.com/CodeHorizon0/LightCloud/blob/main/screenshots/1.png)
 ![Screenshot 2](https://github.com/CodeHorizon0/LightCloud/blob/main/screenshots/2.png)
