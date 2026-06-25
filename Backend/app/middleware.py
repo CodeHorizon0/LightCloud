@@ -17,7 +17,7 @@ class JWTMiddleware(BaseHTTPMiddleware):
         "/download/",
         "/preview/",
         "/delete",
-        "/metadata/",
+        "/metadata/stream",
         "/auth/me",
         "/auth/logout",
         "/auth/delete"
