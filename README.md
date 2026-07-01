@@ -5,7 +5,7 @@
 > This project was completed as part of a course project and is not recommended for use in a production environment until it has been significantly improved.
 
 ## Web app Architecture
-The application uses a headless architecture because the backend and frontend are separated. However, you can always build the frontend using Vite and add it as an HTMLResponse to the server code.
+The application uses a headless architecture because the backend and frontend are separated. However, you can always build the frontend using Vite and add it as an `HTMLResponse` to the server code.
 
 ## Current Features
 1. JWT Account authorization
