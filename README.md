@@ -25,11 +25,3 @@ The application uses a headless architecture because the backend and frontend ar
 6. Files for deployment via Docker
 7. Vulnerability fixes and code refactoring
 8. File sharing
-
-## Screenshots
-![Screenshot 1](https://github.com/CodeHorizon0/LightCloud/blob/main/screenshots/1.png)
-![Screenshot 2](https://github.com/CodeHorizon0/LightCloud/blob/main/screenshots/2.png)
-![Screenshot 3](https://github.com/CodeHorizon0/LightCloud/blob/main/screenshots/3.png)
-![Screenshot 4](https://github.com/CodeHorizon0/LightCloud/blob/main/screenshots/4.png)
-![Screenshot 5](https://github.com/CodeHorizon0/LightCloud/blob/main/screenshots/5.png)
-![Screenshot 6](https://github.com/CodeHorizon0/LightCloud/blob/main/screenshots/6.png)
