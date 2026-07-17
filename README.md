@@ -25,3 +25,4 @@ The application uses a headless architecture because the backend and frontend ar
 6. Files for deployment via Docker
 7. Vulnerability fixes and code refactoring
 8. File sharing
+9. i18n interface localization
