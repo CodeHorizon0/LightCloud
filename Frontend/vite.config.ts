@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite'
+import { defineConfig, ConfigEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig(function ({ mode }) {
+export default defineConfig(({ mode }: ConfigEnv) => {
   const isProd = mode === 'production'
 
   return {
@@ -9,7 +9,7 @@ export default defineConfig(function ({ mode }) {
 
     build: {
       target: 'esnext',
-      minify: isProd ? 'terser' : false,
+      minify: isProd ? 'terser' as const : false,
       esbuild: {
         supported: { var: false }
       },
@@ -24,7 +24,7 @@ export default defineConfig(function ({ mode }) {
         : undefined,
       rollupOptions: isProd
         ? {
-            treeshake: 'smallest',
+            treeshake: 'smallest' as const,
             output: { compact: true }
           }
         : undefined,
