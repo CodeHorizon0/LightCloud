@@ -54,7 +54,7 @@ function useMetadataStream(apiBase: string, onMetadataUpdate: MetadataUpdateHand
       eventSourceRef.current = eventSource;
 
       eventSource.onopen = function onOpen() {
-        console.info("SSE соединение установлено");
+        console.info("SSE connection established");
       };
 
       eventSource.addEventListener("metadata_update", function onMetadataEvent(event: MessageEvent) {
@@ -68,7 +68,7 @@ function useMetadataStream(apiBase: string, onMetadataUpdate: MetadataUpdateHand
 
       eventSource.addEventListener("close_connection", function onCloseConnection() {
         intentionalCloseRef.current = true;
-        console.warn("SSE соединение закрыто сервером, переподключение через 5 секунд");
+        console.warn("SSE connection closed by server, waiting reconnect...");
         cleanupEventSource();
         scheduleReconnect();
       });
@@ -78,7 +78,7 @@ function useMetadataStream(apiBase: string, onMetadataUpdate: MetadataUpdateHand
           return;
         }
 
-        console.error("SSE ошибка соединения", event);
+        console.error("SSE connection error", event);
         cleanupEventSource();
         scheduleReconnect();
       };

@@ -151,16 +151,16 @@ function getSelectedCount(paths: string[], selectedSet: Set<string>): number {
 
 function getFolderLabel(node: FolderNodeType): string {
   if (!node.path) {
-    return "Корень";
+    return "Root";
   }
   return "/" + node.path;
 }
 
 function getFolderHint(node: FolderNodeType): string {
   if (!node.path) {
-    return "Корневая папка";
+    return "Root folder";
   }
-  return "Папка " + getFolderLabel(node);
+  return "Folder " + getFolderLabel(node);
 }
 
 interface IconImageProps {
@@ -235,7 +235,7 @@ function FolderNode(props: FolderNodeProps) {
             onMouseDown={handleCheckboxMouseDown}
             onClick={handleCheckboxClick}
             onChange={handleGroupChange}
-            aria-label={"Выбрать группу " + getFolderLabel(node)}
+            aria-label={"Select group " + getFolderLabel(node)}
           />
           <span className={styles.tableGroupFolder}>
             {getFolderLabel(node)}
@@ -247,7 +247,7 @@ function FolderNode(props: FolderNodeProps) {
         <div className={styles.tableGroupSummaryRight}>
           {groupSelectedCount > 0 ? (
             <span className={styles.tableGroupSelected}>
-              Выбрано: {groupSelectedCount}
+              Selected: {groupSelectedCount}
             </span>
           ) : (
             <span className={styles.tableGroupHint}>
@@ -377,7 +377,7 @@ function MetadataTable(props: MetadataTableProps) {
     return (
       <section className={styles.tablePanel}>
         <div className={styles.tableEmptyState}>
-          Метаданные пока не загружены
+          Metadata not loaded yet
         </div>
       </section>
     );
@@ -392,7 +392,7 @@ function MetadataTable(props: MetadataTableProps) {
     <section className={styles.tablePanel}>
       <div className={styles.tableToolbar}>
         <div className={styles.tableToolbarInfo}>
-          Выбрано: {selectedCount} из {totalCount}
+          Selected: {selectedCount} of {totalCount}
         </div>
         <div className={styles.tableToolbarActions}>
           <button
@@ -401,8 +401,8 @@ function MetadataTable(props: MetadataTableProps) {
             onClick={handleSelectAll}
           >
             {selectedCount === totalCount
-              ? "Снять выбор"
-              : "Выбрать все"}
+              ? "Deselect all"
+              : "Select all"}
           </button>
           <button
             className={styles.smallDangerButton}
@@ -410,7 +410,7 @@ function MetadataTable(props: MetadataTableProps) {
             onClick={handleDeleteSelected}
             disabled={selectedCount === 0 || props.isDeleting}
           >
-            Удалить выбранные
+            Delete selected
           </button>
         </div>
       </div>

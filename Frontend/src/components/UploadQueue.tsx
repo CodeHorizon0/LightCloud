@@ -45,7 +45,7 @@ interface UploadQueueProps {
 
 function UploadQueue(props: UploadQueueProps) {
   if (props.items.length === 0) {
-    return <div className={styles.emptyState}>Файлы не выбраны</div>;
+    return <div className={styles.emptyState}>Files not selected</div>;
   }
   return (
     <div className={styles.uploadList}>

@@ -231,7 +231,7 @@ function PreviewModal(props: PreviewModalProps) {
           return;
         }
         console.error(fetchError);
-        setError("Не удалось загрузить предпросмотр");
+        setError("Failed to load preview");
         setLoading(false);
       });
     return function() {
@@ -348,7 +348,7 @@ function PreviewModal(props: PreviewModalProps) {
     }
     if (preview.kind === "html") {
       if (loading) {
-        return <div className={styles.previewLoading}>Загрузка HTML...</div>;
+        return <div className={styles.previewLoading}>Loading HTML...</div>;
       }
       if (error) {
         return <div className={styles.previewError}>{error}</div>;
@@ -364,7 +364,7 @@ function PreviewModal(props: PreviewModalProps) {
       );
     }
     if (loading) {
-      return <div className={styles.previewLoading}>Загрузка текста...</div>;
+      return <div className={styles.previewLoading}>Loading text...</div>;
     }
     if (error) {
       return <div className={styles.previewError}>{error}</div>;
@@ -411,7 +411,7 @@ function PreviewModal(props: PreviewModalProps) {
             <span className={styles.previewBadge}>{formatBytes(preview.size)}</span>
           </div>
           <button type="button" className={styles.previewCloseButton} onClick={onClose}>
-            Закрыть
+            Close
           </button>
         </div>
         <div className={previewBodyClassName}>{previewBody}</div>

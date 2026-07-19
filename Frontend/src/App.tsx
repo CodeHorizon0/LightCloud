@@ -84,7 +84,7 @@ function getResponseMessage(xhr: XMLHttpRequest): string {
   try {
     const data = JSON.parse(xhr.responseText || "null");
     if (Array.isArray(data)) {
-      return `Ответ сервера: ${data.length} файлов`;
+      return `Server response: ${data.length} files`;
     }
     if (data && typeof data === "object") {
       return data.detail || data.msg || data.message || `HTTP ${xhr.status}`;
@@ -138,7 +138,7 @@ function App(props: AppProps): ReactNode {
   const [selectedItems, setSelectedItems] = useState<UploadItem[]>([]);
   const [metadata, setMetadata] = useState<Record<string, FileInfo>>({});
   const [selectedMetadataPaths, setSelectedMetadataPaths] = useState<string[]>([]);
-  const [statusText, setStatusText] = useState<string>("Готово к загрузке");
+  const [statusText, setStatusText] = useState<string>("Ready to upload");
   const [statusTone, setStatusTone] = useState<StatusTone>("muted");
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -202,7 +202,7 @@ function App(props: AppProps): ReactNode {
   const addIncomingItems = useCallback(
     (incomingItems: UploadItem[]) => {
       if (!incomingItems || incomingItems.length === 0) {
-        setStatus("Пустые файлы и пустые папки не загружаются", "warn");
+        setStatus("Empty files and folders are not uploaded", "warn");
         return;
       }
 
@@ -214,7 +214,7 @@ function App(props: AppProps): ReactNode {
       }
 
       if (validItems.length === 0) {
-        setStatus("Пустые файлы и пустые папки не загружаются", "warn");
+        setStatus("Empty files and folders are not uploaded", "warn");
         return;
       }
 
@@ -222,8 +222,8 @@ function App(props: AppProps): ReactNode {
 
       setStatus(
         validItems.length !== incomingItems.length
-          ? "Пустые файлы пропущены, остальное добавлено в очередь"
-          : "Файлы добавлены в очередь",
+          ? "Empty files skipped, rest added to queue"
+          : "Files added to queue",
         validItems.length !== incomingItems.length ? "warn" : "ok"
       );
     },
@@ -233,7 +233,7 @@ function App(props: AppProps): ReactNode {
   const clearSelection = useCallback(() => {
     if (isUploadingRef.current) return;
     setSelectedItems([]);
-    setStatus("Очередь очищена", "muted");
+    setStatus("Queue cleared", "muted");
   }, [setStatus]);
 
   const handleLogout = useCallback(() => {
@@ -255,12 +255,12 @@ function App(props: AppProps): ReactNode {
       }
 
       if (normalizedPaths.length === 0) {
-        setStatus("Нечего удалять", "warn");
+        setStatus("Nothing to delete", "warn");
         return;
       }
 
       setIsDeleting(true);
-      setStatus(`Удаление: ${normalizedPaths.length} файлов`, "muted");
+      setStatus(`Deleting: ${normalizedPaths.length} files`, "muted");
 
       try {
         const response = await fetch(`${API_BASE}/delete`, {
@@ -298,13 +298,13 @@ function App(props: AppProps): ReactNode {
 
         setStatus(
           missing.length > 0
-            ? `Удалено: ${deleted.length}, не найдено: ${missing.length}`
-            : `Удалено: ${deleted.length}`,
+            ? `Deleted: ${deleted.length}, not found: ${missing.length}`
+            : `Deleted: ${deleted.length}`,
           missing.length > 0 ? "warn" : "ok"
         );
       } catch (error) {
         console.error(error);
-        setStatus("Не удалось удалить файлы", "danger");
+        setStatus("Failed to delete files", "danger");
       } finally {
         setIsDeleting(false);
       }
@@ -313,7 +313,7 @@ function App(props: AppProps): ReactNode {
   );
 
   const handleDeleteAccount = useCallback(() => {
-    const confirmed = window.confirm("Удалить аккаунт? Это действие нельзя отменить.");
+    const confirmed = window.confirm("Delete account? This action cannot be undone.");
     if (!confirmed) return;
 
     fetch(`${API_BASE}/auth/delete`, {
@@ -330,7 +330,7 @@ function App(props: AppProps): ReactNode {
       .then(() => navigate("/login", { replace: true }))
       .catch((error) => {
         console.error(error);
-        setStatus("Не удалось удалить аккаунт", "danger");
+        setStatus("Failed to delete account", "danger");
       });
   }, [auth, navigate, setStatus]);
 
@@ -408,12 +408,12 @@ function App(props: AppProps): ReactNode {
             updateItem(range.id, (current) => ({
               ...current,
               progress: Math.max(0, Math.min(100, progress)),
-              status: progress >= 100 ? "обработка" : "загрузка",
+              status: progress >= 100 ? "processing" : "uploading",
             }));
           }
 
           const percent = Math.round((loaded / batchProgress.total) * 100);
-          setStatus(`Загрузка пакета ${batchIndex + 1}/${totalBatches}: ${percent}%`, "muted");
+          setStatus(`Uploading batch ${batchIndex + 1}/${totalBatches}: ${percent}%`, "muted");
         };
 
         xhr.upload.onload = () => {
@@ -421,7 +421,7 @@ function App(props: AppProps): ReactNode {
             updateItem(item.id, (current) => ({
               ...current,
               progress: 100,
-              status: "обработка",
+              status: "processing",
             }));
           }
         };
@@ -454,7 +454,7 @@ function App(props: AppProps): ReactNode {
           attempt += 1;
           if (attempt > UPLOAD_RETRY_COUNT) throw error;
           setStatus(
-            `Повтор загрузки пакета ${batchIndex + 1}/${totalBatches} через ${UPLOAD_RETRY_DELAY_MS} мс`,
+            `Retrying upload batch ${batchIndex + 1}/${totalBatches} in ${UPLOAD_RETRY_DELAY_MS} ms`,
             "warn"
           );
           await sleep(UPLOAD_RETRY_DELAY_MS * Math.pow(2, attempt - 1));
@@ -470,11 +470,11 @@ function App(props: AppProps): ReactNode {
 
     const snapshot = selectedItemsRef.current.slice();
     const pendingItems: UploadItem[] = snapshot.filter(
-      (item) => item.status !== "загрузка" && item.status !== "обработка"
+      (item) => item.status !== "uploading" && item.status !== "processing"
     );
 
     if (pendingItems.length === 0) {
-      setStatus("Сначала выбери файлы или папку", "warn");
+      setStatus("Please select files or folder first", "warn");
       return;
     }
 
@@ -482,7 +482,7 @@ function App(props: AppProps): ReactNode {
     isUploadingRef.current = true;
     setIsUploading(true);
     setStatus(
-      `Загрузка началась: ${pendingItems.length} файлов, ${batches.length} запросов`,
+      `Upload started: ${pendingItems.length} files, ${batches.length} requests`,
       "muted"
     );
 
@@ -497,7 +497,7 @@ function App(props: AppProps): ReactNode {
           updateItem(item.id, (current) => ({
             ...current,
             progress: 0,
-            status: "загрузка",
+            status: "uploading",
           }));
         }
 
@@ -511,7 +511,7 @@ function App(props: AppProps): ReactNode {
           });
 
           setStatus(
-            `Загружено: ${successCount}, ошибок: ${errorCount}`,
+            `Uploaded: ${successCount}, errors: ${errorCount}`,
             errorCount > 0 ? "warn" : "ok"
           );
         } catch (error) {
@@ -521,10 +521,10 @@ function App(props: AppProps): ReactNode {
             updateItem(item.id, (current) => ({
               ...current,
               progress: 0,
-              status: "ошибка",
+              status: "error",
             }));
           }
-          setStatus(`Ошибка в пакете ${index + 1}/${batches.length}`, "danger");
+          setStatus(`Error in batch ${index + 1}/${batches.length}`, "danger");
         }
 
         if (!isMountedRef.current) break;
@@ -533,10 +533,10 @@ function App(props: AppProps): ReactNode {
       isUploadingRef.current = false;
       setIsUploading(false);
       if (successCount === 0 && errorCount === 0) {
-        setStatus("Загрузка завершена", "muted");
+        setStatus("Upload finished", "muted");
       } else {
         setStatus(
-          `Готово. Успешно: ${successCount}, ошибок: ${errorCount}`,
+          `Done. Success: ${successCount}, errors: ${errorCount}`,
           errorCount > 0 ? "warn" : "ok"
         );
       }
@@ -558,10 +558,10 @@ function App(props: AppProps): ReactNode {
         link.click();
         link.remove();
         URL.revokeObjectURL(objectUrl);
-        setStatus(`Скачано: ${path}`, "ok");
+        setStatus(`Downloaded: ${path}`, "ok");
       } catch (error) {
         console.error(error);
-        setStatus(`Не удалось скачать: ${path}`, "danger");
+        setStatus(`Failed to download: ${path}`, "danger");
       }
     },
     [setStatus]
@@ -666,7 +666,7 @@ function App(props: AppProps): ReactNode {
       const cleanPath = normalizePath(path);
       const kind = getPreviewKind(cleanPath, info);
       if (!kind) {
-        setStatus("Предпросмотр недоступен для этого файла", "warn");
+        setStatus("Preview unavailable for this file", "warn");
         return;
       }
       setPreviewItem({

@@ -50,7 +50,7 @@ export function createUploadItem(file: File, relativePath: string): UploadItem {
     relativePath: cleanPath,
     size: file.size,
     progress: 0,
-    status: "в очереди",
+    status: "in queue",
   };
 }
 

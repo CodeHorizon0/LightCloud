@@ -22,7 +22,7 @@ function ControlsPanel(props: ControlsPanelProps) {
         onClick={props.onUpload}
         disabled={props.isUploading || props.queueCount === 0}
       >
-        {props.isUploading ? "Загрузка..." : "Загрузить выбранное"}
+        {props.isUploading ? "Uploading..." : "Upload selected"}
       </button>
 
       <button
@@ -31,7 +31,7 @@ function ControlsPanel(props: ControlsPanelProps) {
         onClick={props.onClear}
         disabled={props.disabledClear}
       >
-        Очистить очередь
+        Clear queue
       </button>
 
       <input

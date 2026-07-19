@@ -43,7 +43,7 @@ function UserCard(props: UserCardProps) {
         type="button"
         onClick={toggleMenu}
         aria-expanded={open}
-        aria-label={"Профиль " + username}
+        aria-label={"Profile " + username}
         className={styles.trigger}
       >
         <Avatar name={username} variant="beam" size={26} />
@@ -56,14 +56,14 @@ function UserCard(props: UserCardProps) {
             onClick={handleLogout}
             className={styles.logoutButton}
           >
-            Выйти из аккаунта
+            Logout account
           </button>
           <button
             type="button"
             onClick={handleDeleteAccount}
             className={styles.deleteButton}
           >
-            Удалить аккаунт
+            Delete account
           </button>
         </div>
       )}
