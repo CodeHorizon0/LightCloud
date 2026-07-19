@@ -1,7 +1,7 @@
 // PreviewModal.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { buildPreviewUrl, formatDisplayPath } from "../utils/storage.js";
-import styles from "../App.module.css";
+import styles from "./PreviewModal.module.css";
 
 interface PreviewData {
   kind: "image" | "audio" | "video" | "text" | "html";
@@ -411,7 +411,7 @@ function PreviewModal(props: PreviewModalProps) {
             <span className={styles.previewBadge}>{formatBytes(preview.size)}</span>
           </div>
           <button type="button" className={styles.previewCloseButton} onClick={onClose}>
-            Close
+            +
           </button>
         </div>
         <div className={previewBodyClassName}>{previewBody}</div>

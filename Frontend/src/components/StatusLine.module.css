@@ -1,0 +1,24 @@
+.status {
+  min-height: 20px;
+  margin: 4px 0 8px;
+  font-size: 13px;
+  line-height: 1.25;
+  color: #9ca3af;
+  overflow-wrap: anywhere;
+}
+
+.muted {
+  color: #9ca3af;
+}
+
+.ok {
+  color: #3ecf8e;
+}
+
+.warn {
+  color: #ffcc66;
+}
+
+.danger {
+  color: #ff5c77;
+}

@@ -1,0 +1,85 @@
+.dropzone,
+.dropzoneActive {
+  min-height: 92px;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  border-radius: 9px;
+  text-align: center;
+  user-select: none;
+  border: 1.5px dashed #6b7280;
+  background: rgba(255, 255, 255, 0.02);
+  transition: 0.2s ease;
+}
+
+.dropzoneActive {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.dropzoneTitle {
+  font-size: 14px;
+  color: #9ca3af;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.dropzoneSubtitle {
+  margin-top: 3px;
+  color: #9ca3af;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.dropzoneActions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.secondaryButton {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 4px;
+  margin: 2px 0;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.15;
+  cursor: pointer;
+  user-select: none;
+  transition: 0.2s ease;
+  width: fit-content;
+  min-width: 0;
+  white-space: nowrap;
+  background: #1e1b4b;
+  border-color: #4f46e5;
+  color: #c7d2fe;
+}
+
+.secondaryButton:hover {
+  background: #312e81;
+}
+
+.secondaryButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .dropzone,
+  .dropzoneActive {
+    min-height: 84px;
+    padding: 10px;
+  }
+
+  .dropzoneActions {
+    gap: 6px;
+  }
+}

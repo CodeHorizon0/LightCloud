@@ -1,0 +1,295 @@
+.previewOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(4, 8, 16, 0.72);
+  display: grid;
+  place-items: center;
+  padding: 10px;
+}
+
+.previewModal {
+  width: min(100%, 1180px);
+  height: min(calc(100vh - 20px), 920px);
+  max-height: min(calc(100vh - 20px), 920px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #3c3f45;
+  border-radius: 14px;
+  background: rgba(16, 18, 24, 0.98);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+.previewHeader {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid #2f3339;
+  flex-wrap: nowrap;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+}
+
+.previewMeta {
+  min-width: 0;
+  flex: 1 1 260px;
+}
+
+.previewTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #eef2ff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.previewSubtitle {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #9ca3af;
+  overflow-wrap: anywhere;
+}
+
+.previewStats {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  flex-direction: row;
+}
+
+.previewBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.previewCloseButton {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 100px;
+  margin: 2px 0;
+  aspect-ratio: 1;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.15;
+  min-width: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: 0.2s ease;
+  transform: rotate(45deg) scale(2.0);
+  width: fit-content;
+  min-width: 0;
+  font-weight: 700;
+  white-space: nowrap;
+  background-color: transparent;
+  border: none;
+  color: #e5e7eb;
+}
+
+.previewCloseButton:hover {
+  color: #c6d9ff;
+}
+
+.previewCloseButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.previewBody {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  background: #0b0f14;
+}
+
+.previewVisualShell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 0;
+  box-sizing: border-box;
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.16), rgba(11, 15, 20, 0.96) 68%), #0b0f14;
+}
+
+.previewVisualBackdrop,
+.previewVisualBackdropVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(28px) saturate(1.2);
+  transform: scale(1.12);
+  opacity: 0.7;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ===== Исправленные стили для медиа ===== */
+.previewMedia,
+.previewVideo {
+  position: relative;
+  z-index: 1;
+  display: block;
+  /* вместо width: 100% и height: 100% используем авторазмер с ограничениями */
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  background: transparent;
+  margin: auto; /* центрирование внутри grid-контейнера */
+}
+
+.previewImage {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  background: transparent;
+  margin: auto;
+}
+/* ===== Конец исправлений ===== */
+
+.previewAudioShell {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.previewLoading,
+.previewError {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #cbd5e1;
+  padding: 16px;
+  text-align: center;
+}
+
+.previewError {
+  color: #ffb4c0;
+}
+
+.previewBodyScrollable {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.previewTextScroll {
+  width: 100%;
+  min-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.previewText {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #dbe4ee;
+  font-size: 13px;
+  line-height: 1.45;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.previewFrame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #353535;
+  display: block;
+}
+
+.previewAudio {
+  display: block;
+  width: min(100%, 720px);
+  max-width: 100%;
+  border-radius: 12px;
+}
+
+.previewAudio::-webkit-media-controls-panel {
+  background-color: #ffffff;
+}
+
+.previewAudio::-webkit-media-controls-enclosure {
+  background-color: #ffffff;
+}
+
+.previewAudio::-moz-focus-outer {
+  border: 0;
+}
+
+@media (max-width: 900px) {
+  .previewModal {
+    max-height: calc(100vh - 16px);
+    height: calc(100vh - 16px);
+  }
+}
+
+@media (max-width: 760px) {
+  .previewOverlay {
+    padding: 6px;
+  }
+
+  .previewModal {
+    max-height: calc(100vh - 12px);
+    height: calc(100vh - 12px);
+    border-radius: 12px;
+  }
+
+  .previewHeader {
+    padding: 8px 10px;
+  }
+
+  .previewBody {
+    min-height: 220px;
+  }
+
+  .previewText {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .previewAudioShell {
+    padding: 12px;
+  }
+
+  .previewAudio {
+    width: 100%;
+    max-width: 100%;
+  }
+}

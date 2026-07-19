@@ -1,5 +1,5 @@
 import React, { useRef, useState, DragEvent, KeyboardEvent, ChangeEvent, ReactElement, MouseEvent } from "react";
-import styles from "../App.module.css";
+import styles from "./Dropzone.module.css";
 
 interface DropzoneProps {
   isDragging?: boolean;

@@ -1,0 +1,65 @@
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.primaryButton,
+.ghostButton {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 4px;
+  margin: 2px 0;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.15;
+  cursor: pointer;
+  user-select: none;
+  transition: 0.2s ease;
+  width: fit-content;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.primaryButton {
+  background: #6366f1;
+  color: #fff;
+}
+
+.primaryButton:hover {
+  background: #4f46e5;
+}
+
+.primaryButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ghostButton {
+  background: transparent;
+  border-color: #3c3f45;
+  color: #e5e6e8;
+}
+
+.ghostButton:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ghostButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .actions {
+    gap: 6px;
+    align-items: flex-start;
+  }
+}

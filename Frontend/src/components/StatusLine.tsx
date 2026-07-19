@@ -1,6 +1,6 @@
 // StatusLine.tsx
 import React from "react";
-import styles from "../App.module.css";
+import styles from "./StatusLine.module.css";
 
 interface StatusLineProps {
   text: string;

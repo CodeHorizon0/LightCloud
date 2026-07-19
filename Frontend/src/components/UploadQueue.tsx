@@ -1,7 +1,7 @@
 // UploadQueue.tsx
 import React, { memo } from "react";
-import styles from "../App.module.css";
-import { formatSizeMB } from "../utils/storage.js";
+import styles from "./UploadQueue.module.css";
+import { formatSizeMB } from "../utils/storage";
 
 interface UploadItemData {
   id: string | number;

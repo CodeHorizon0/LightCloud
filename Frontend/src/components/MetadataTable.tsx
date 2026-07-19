@@ -4,7 +4,7 @@ import deleteIcon from "../assets/delete.svg";
 import viewIcon from "../assets/view.svg";
 import downloadIcon from "../assets/download.svg";
 import { formatDisplayPath, getFileName, normalizePath } from "../utils/storage.js";
-import styles from "../App.module.css";
+import styles from "./MetadataTable.module.css";
 
 interface FileInfo {
   original_size?: number;
