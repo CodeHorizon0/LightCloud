@@ -212,7 +212,6 @@ function PreviewModal(props: PreviewModalProps) {
       };
     }
 
-    // Для .kra
     if (preview.kind === "kra") {
       setLoading(true);
       setError("");
@@ -270,7 +269,6 @@ function PreviewModal(props: PreviewModalProps) {
       };
     }
 
-    // Для текста и HTML
     if (preview.kind !== "text" && preview.kind !== "html") {
       setContent("");
       setLoading(false);
