@@ -1,10 +1,10 @@
-// PreviewModal.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
-import { buildPreviewUrl, formatDisplayPath } from "../utils/storage.js";
+import { buildPreviewUrl, buildDownloadUrl, formatDisplayPath } from "../utils/storage.js";
 import styles from "./PreviewModal.module.css";
+import JSZip from "jszip";
 
 interface PreviewData {
-  kind: "image" | "audio" | "video" | "text" | "html";
+  kind: "image" | "audio" | "video" | "text" | "html" | "kra";
   path: string;
   title: string;
   size: number;
@@ -49,16 +49,23 @@ function buildSafeSrcDoc(rawHtml: string): string {
 function PreviewModal(props: PreviewModalProps) {
   const preview = props.preview;
   const onClose = props.onClose;
+
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [kraImageUrl, setKraImageUrl] = useState<string>("");
+
   const mainVideoRef = useRef<HTMLVideoElement>(null);
   const backdropVideoRef = useRef<HTMLVideoElement>(null);
   const syncFrameRef = useRef<number>(0);
   const lastSyncedTimeRef = useRef<number>(-1);
+
   const previewUrl = useMemo<string>(function() {
     if (!preview) {
       return "";
+    }
+    if (preview.kind === "kra") {
+      return buildDownloadUrl(preview.path);
     }
     return buildPreviewUrl(preview.path);
   }, [preview]);
@@ -190,6 +197,12 @@ function PreviewModal(props: PreviewModalProps) {
   useEffect(function() {
     let cancelled = false;
     const controller = new AbortController();
+
+    if (kraImageUrl) {
+      URL.revokeObjectURL(kraImageUrl);
+      setKraImageUrl("");
+    }
+
     if (!preview) {
       setContent("");
       setLoading(false);
@@ -198,6 +211,66 @@ function PreviewModal(props: PreviewModalProps) {
         controller.abort();
       };
     }
+
+    // Для .kra
+    if (preview.kind === "kra") {
+      setLoading(true);
+      setError("");
+      setContent("");
+
+      fetch(previewUrl, {
+        credentials: "include",
+        headers: {
+          'Accept': 'application/zip, application/octet-stream, */*'
+        },
+        signal: controller.signal,
+      })
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error(`Failed to fetch .kra: ${response.status}`);
+          }
+          return response.arrayBuffer();
+        })
+        .then(function(arrayBuffer) {
+          if (cancelled) return;
+          return JSZip.loadAsync(arrayBuffer);
+        })
+        .then(function(zip) {
+          if (cancelled) return;
+          if (!zip) {
+            throw new Error("Failed to load zip archive");
+          }
+          const previewFile = zip.file("preview.png");
+          if (!previewFile) {
+            throw new Error("No preview.png found in .kra archive");
+          }
+          return previewFile.async("blob");
+        })
+        .then(function(blob) {
+          if (cancelled) return;
+          if (!blob) {
+            throw new Error("Failed to extract blob from preview.png");
+          }
+          const url = URL.createObjectURL(blob);
+          setKraImageUrl(url);
+          setLoading(false);
+        })
+        .catch(function(fetchError) {
+          if (cancelled || fetchError.name === "AbortError") {
+            return;
+          }
+          console.error(fetchError);
+          setError("Failed to extract preview from .kra");
+          setLoading(false);
+        });
+
+      return function() {
+        cancelled = true;
+        controller.abort();
+      };
+    }
+
+    // Для текста и HTML
     if (preview.kind !== "text" && preview.kind !== "html") {
       setContent("");
       setLoading(false);
@@ -206,9 +279,11 @@ function PreviewModal(props: PreviewModalProps) {
         controller.abort();
       };
     }
+
     setLoading(true);
     setError("");
     setContent("");
+
     fetch(previewUrl, {
       credentials: "include",
       signal: controller.signal,
@@ -234,6 +309,7 @@ function PreviewModal(props: PreviewModalProps) {
         setError("Failed to load preview");
         setLoading(false);
       });
+
     return function() {
       cancelled = true;
       controller.abort();
@@ -276,6 +352,40 @@ function PreviewModal(props: PreviewModalProps) {
     if (!preview) {
       return null;
     }
+
+    if (preview.kind === "kra") {
+      if (loading) {
+        return <div className={styles.previewLoading}>Распаковка .kra...</div>;
+      }
+      if (error) {
+        return <div className={styles.previewError}>{error}</div>;
+      }
+      if (!kraImageUrl) {
+        return <div className={styles.previewLoading}>Миниатюра не найдена</div>;
+      }
+
+      return (
+        <div className={styles.previewVisualShell}>
+          <img
+            className={styles.previewVisualBackdrop}
+            src={kraImageUrl}
+            alt=""
+            aria-hidden="true"
+            crossOrigin="use-credentials"
+            loading="eager"
+          />
+          <img
+            className={styles.previewImage}
+            src={kraImageUrl}
+            alt={preview.title}
+            crossOrigin="use-credentials"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      );
+    }
+
     if (preview.kind === "image") {
       return (
         <div className={styles.previewVisualShell}>
@@ -298,6 +408,7 @@ function PreviewModal(props: PreviewModalProps) {
         </div>
       );
     }
+
     if (preview.kind === "audio") {
       return (
         <div className={styles.previewAudioShell}>
@@ -311,6 +422,7 @@ function PreviewModal(props: PreviewModalProps) {
         </div>
       );
     }
+
     if (preview.kind === "video") {
       return (
         <div className={styles.previewVisualShell}>
@@ -346,6 +458,7 @@ function PreviewModal(props: PreviewModalProps) {
         </div>
       );
     }
+
     if (preview.kind === "html") {
       if (loading) {
         return <div className={styles.previewLoading}>Loading HTML...</div>;
@@ -363,6 +476,7 @@ function PreviewModal(props: PreviewModalProps) {
         />
       );
     }
+
     if (loading) {
       return <div className={styles.previewLoading}>Loading text...</div>;
     }
@@ -374,7 +488,7 @@ function PreviewModal(props: PreviewModalProps) {
         <pre className={styles.previewText}>{content}</pre>
       </div>
     );
-  }, [content, error, loading, preview, previewUrl]);
+  }, [content, error, loading, preview, previewUrl, kraImageUrl]);
 
   if (!preview) {
     return null;

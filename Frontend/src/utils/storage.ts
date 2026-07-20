@@ -150,7 +150,24 @@ function isPreviewableVideoExtension(ext: string): boolean {
   return videoExts.includes(ext.toLowerCase());
 }
 
+function isPreviewableKraExtension(ext: string): boolean {
+  return ext.toLowerCase() === "kra";
+}
+
 export function getPreviewKind(path: string, info?: unknown): string | null {
+  if (info && typeof info === "object") {
+    const category = (info as any).category;
+    if (category === "kra") {
+      return "kra";
+    }
+  }
+
+  const ext = getFileExtension(path);
+
+  if (isPreviewableKraExtension(ext)) {
+    return "kra";
+  }
+
   const mime = String(
     (info && typeof info === "object" && (
       (info as any).mime_type ||
@@ -158,7 +175,6 @@ export function getPreviewKind(path: string, info?: unknown): string | null {
       (info as any).content_type
     )) || ""
   ).toLowerCase();
-  const ext = getFileExtension(path);
 
   if (mime.startsWith("image/") || isPreviewableImageExtension(ext)) {
     return "image";
