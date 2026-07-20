@@ -145,6 +145,8 @@ def _extension(path: Path, filename_hint: str | None = None) -> str:
     return path.suffix.lower()
 
 def _category_from_extension(ext: str) -> str | None:
+    if ext == ".kra":
+        return "kra"
     if ext in TEXT_EXTENSIONS:
         return "text"
     if ext in LOSSLESS_IMAGE_EXTENSIONS:
@@ -244,6 +246,10 @@ def detect_profile_from_path(path: str | Path, filename_hint: str | None = None)
     elif ext in TEXT_EXTENSIONS:
         category = "text"
 
+    if ext == ".kra":
+        mime = "application/x-krita"
+        category = "kra"
+
     return FileProfile(
         mime=mime,
         category=category,
@@ -262,6 +268,10 @@ def detect_profile_from_bytes(data: bytes | bytearray | memoryview, filename_hin
     ext_category = _category_from_extension(ext)
     if category == "binary" and ext_category is not None:
         category = ext_category
+
+    if ext == ".kra":
+        mime = "application/x-krita"
+        category = "kra"
 
     return FileProfile(
         mime=mime,
