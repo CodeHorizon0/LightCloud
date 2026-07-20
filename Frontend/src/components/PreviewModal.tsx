@@ -240,7 +240,7 @@ function PreviewModal(props: PreviewModalProps) {
           if (!zip) {
             throw new Error("Failed to load zip archive");
           }
-          const previewFile = zip.file("preview.png");
+          const previewFile = zip.file("mergedimage.png");
           if (!previewFile) {
             throw new Error("No preview.png found in .kra archive");
           }
