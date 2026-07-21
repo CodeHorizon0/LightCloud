@@ -1,10 +1,13 @@
+// PreviewModal.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
-import { buildPreviewUrl, buildDownloadUrl, formatDisplayPath } from "../utils/storage.js";
+import { buildPreviewUrl, buildDownloadUrl } from "../utils/storage.js";
 import styles from "./PreviewModal.module.css";
 import JSZip from "jszip";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface PreviewData {
-  kind: "image" | "audio" | "video" | "text" | "html" | "kra";
+  kind: "image" | "audio" | "video" | "text" | "html" | "kra" | "md";
   path: string;
   title: string;
   size: number;
@@ -269,7 +272,7 @@ function PreviewModal(props: PreviewModalProps) {
       };
     }
 
-    if (preview.kind !== "text" && preview.kind !== "html") {
+    if (preview.kind !== "text" && preview.kind !== "html" && preview.kind !== "md") {
       setContent("");
       setLoading(false);
       setError("");
@@ -475,6 +478,22 @@ function PreviewModal(props: PreviewModalProps) {
       );
     }
 
+    if (preview.kind === "md") {
+      if (loading) {
+        return <div className={styles.previewLoading}>Loading Markdown...</div>;
+      }
+      if (error) {
+        return <div className={styles.previewError}>{error}</div>;
+      }
+      return (
+        <div className={styles.previewTextScroll}>
+          <div className={styles.previewMarkdown}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+          </div>
+        </div>
+      );
+    }
+
     if (loading) {
       return <div className={styles.previewLoading}>Loading text...</div>;
     }
@@ -492,7 +511,7 @@ function PreviewModal(props: PreviewModalProps) {
     return null;
   }
 
-  const previewBodyClassName = preview.kind === "text"
+  const previewBodyClassName = preview.kind === "text" || preview.kind === "md"
     ? `${styles.previewBody} ${styles.previewBodyScrollable}`
     : styles.previewBody;
 

@@ -1,4 +1,12 @@
-import React, { useRef, useState, DragEvent, KeyboardEvent, ChangeEvent, ReactElement, MouseEvent } from "react";
+import React, {
+  useRef,
+  useState,
+  DragEvent,
+  KeyboardEvent,
+  ChangeEvent,
+  ReactElement,
+  MouseEvent
+} from "react";
 import styles from "./Dropzone.module.css";
 
 interface DropzoneProps {
@@ -25,8 +33,15 @@ function Dropzone(props: DropzoneProps): ReactElement {
     setIsPickerBusy(true);
 
     try {
-      if ((window as any).showOpenFilePicker) {
-        const handles: FileSystemFileHandle[] = await (window as any).showOpenFilePicker({ multiple: true });
+      if ("showOpenFilePicker" in window) {
+        const handles: FileSystemFileHandle[] = await (
+          window as Window & {
+            showOpenFilePicker: Function;
+          }
+        ).showOpenFilePicker({
+          multiple: true
+        });
+
         const files: File[] = await Promise.all(
           handles.map(function(handle: FileSystemFileHandle): Promise<File> {
             return handle.getFile();
@@ -36,18 +51,15 @@ function Dropzone(props: DropzoneProps): ReactElement {
         if (props.onFilesSelected) {
           props.onFilesSelected(files);
         }
+
         return;
       }
 
-      if (fileInputRef.current) {
-        fileInputRef.current.click();
-      }
+      fileInputRef.current?.click();
     } catch (error) {
-      if (error && (error as Error).name !== "AbortError") {
+      if (error instanceof Error && error.name !== "AbortError") {
         console.error("openFilePicker failed:", error);
-        if (fileInputRef.current) {
-          fileInputRef.current.click();
-        }
+        fileInputRef.current?.click();
       }
     } finally {
       pickerOpenRef.current = false;
@@ -63,14 +75,10 @@ function Dropzone(props: DropzoneProps): ReactElement {
     pickerOpenRef.current = true;
     setIsPickerBusy(true);
 
-    try {
-      if (folderInputRef.current) {
-        folderInputRef.current.click();
-      }
-    } finally {
-      pickerOpenRef.current = false;
-      setIsPickerBusy(false);
-    }
+    folderInputRef.current?.click();
+
+    pickerOpenRef.current = false;
+    setIsPickerBusy(false);
   }
 
   function handleClick(): void {
@@ -86,40 +94,36 @@ function Dropzone(props: DropzoneProps): ReactElement {
 
   function handleFilesChange(event: ChangeEvent<HTMLInputElement>): void {
     const files = event.target.files;
+
     if (files && files.length > 0 && props.onFilesSelected) {
       props.onFilesSelected(files);
     }
+
     event.target.value = "";
   }
 
   function handleFolderChange(event: ChangeEvent<HTMLInputElement>): void {
     const files = event.target.files;
+
     if (files && files.length > 0 && props.onFolderSelected) {
       props.onFolderSelected(files);
     }
+
     event.target.value = "";
   }
 
   function handleDragOver(event: DragEvent<HTMLElement>): void {
     event.preventDefault();
-
-    if (props.onDragOver) {
-      props.onDragOver(event);
-    }
+    props.onDragOver?.(event);
   }
 
   function handleDragLeave(event: DragEvent<HTMLElement>): void {
-    if (props.onDragLeave) {
-      props.onDragLeave(event);
-    }
+    props.onDragLeave?.(event);
   }
 
   function handleDrop(event: DragEvent<HTMLElement>): void {
     event.preventDefault();
-
-    if (props.onDrop) {
-      props.onDrop(event);
-    }
+    props.onDrop?.(event);
   }
 
   function stopAndOpenFiles(event: MouseEvent<HTMLButtonElement>): void {
@@ -158,7 +162,13 @@ function Dropzone(props: DropzoneProps): ReactElement {
         type="file"
         multiple
         className={styles.hiddenInput}
-        {...({ webkitdirectory: true } as React.InputHTMLAttributes<HTMLInputElement>)}
+        {...({
+          webkitdirectory: "",
+          directory: ""
+        } as React.InputHTMLAttributes<HTMLInputElement> & {
+          webkitdirectory: string;
+          directory: string;
+        })}
         onChange={handleFolderChange}
       />
 

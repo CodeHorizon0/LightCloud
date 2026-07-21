@@ -1,3 +1,4 @@
+// storage.ts
 /// <reference types="vite/client" />
 
 export interface UploadItem {
@@ -126,7 +127,7 @@ async function readAllDirectoryEntries(reader: FileSystemDirectoryReader): Promi
 
 function isPreviewableTextExtension(ext: string): boolean {
   const textExts = [
-    "txt", "md", "json", "xml", "csv", "tsv", "log",
+    "txt", "json", "xml", "csv", "tsv", "log",
     "yml", "yaml", "js", "jsx", "ts", "tsx", "css",
     "scss", "sass", "less", "html", "htm", "svg",
     "py", "java", "c", "cpp", "h", "hpp", "rs",
@@ -154,6 +155,10 @@ function isPreviewableKraExtension(ext: string): boolean {
   return ext.toLowerCase() === "kra";
 }
 
+function isPreviewableMarkdownExtension(ext: string): boolean {
+  return ext.toLowerCase() === "md";
+}
+
 export function getPreviewKind(path: string, info?: unknown): string | null {
   if (info && typeof info === "object") {
     const category = (info as any).category;
@@ -166,6 +171,10 @@ export function getPreviewKind(path: string, info?: unknown): string | null {
 
   if (isPreviewableKraExtension(ext)) {
     return "kra";
+  }
+
+  if (isPreviewableMarkdownExtension(ext)) {
+    return "md";
   }
 
   const mime = String(

@@ -275,3 +275,146 @@
     max-width: 100%;
   }
 }
+
+
+.previewMarkdown {
+  padding: 0px 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #e7eaf0;
+  background: transparent;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.previewMarkdown h1,
+.previewMarkdown h2,
+.previewMarkdown h3,
+.previewMarkdown h4,
+.previewMarkdown h5,
+.previewMarkdown h6 {
+  margin: 16px 0 8px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #eef2ff;
+}
+
+.previewMarkdown h1 {
+  font-size: 26px;
+  border-bottom: 1px solid #2d333b;
+  padding-bottom: 6px;
+}
+
+.previewMarkdown h2 {
+  font-size: 22px;
+  border-bottom: 1px solid #2d333b;
+  padding-bottom: 4px;
+}
+
+.previewMarkdown h3 { font-size: 18px; }
+.previewMarkdown h4 { font-size: 16px; }
+.previewMarkdown h5 { font-size: 14px; }
+.previewMarkdown h6 { font-size: 13px; color: #9ca3af; }
+
+.previewMarkdown p {
+  margin: 0 0 12px 0;
+}
+
+.previewMarkdown a {
+  color: #58a6ff;
+  text-decoration: none;
+}
+
+.previewMarkdown a:hover {
+  text-decoration: underline;
+}
+
+.previewMarkdown ul,
+.previewMarkdown ol {
+  padding-left: 24px;
+  margin: 0 0 12px 0;
+}
+
+.previewMarkdown li {
+  margin-bottom: 4px;
+}
+
+.previewMarkdown li > ul,
+.previewMarkdown li > ol {
+  margin-bottom: 0;
+}
+
+.previewMarkdown blockquote {
+  margin: 0 0 12px 0;
+  padding: 0 16px;
+  border-left: 4px solid #6366f1;
+  color: #cbd5e1;
+}
+
+.previewMarkdown code {
+  background: #1c2128;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  color: #e7eaf0;
+}
+
+.previewMarkdown pre {
+  background: #1c2128;
+  padding: 12px 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0 0 12px 0;
+}
+
+.previewMarkdown pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  font-size: 0.9em;
+  color: #e7eaf0;
+}
+
+.previewMarkdown table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0 0 12px 0;
+  font-size: 13px;
+}
+
+.previewMarkdown table th,
+.previewMarkdown table td {
+  border: 1px solid #3c3f45;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.previewMarkdown table th {
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 600;
+}
+
+.previewMarkdown table tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.previewMarkdown img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.previewMarkdown hr {
+  border: 0;
+  border-top: 1px solid #2d333b;
+  margin: 16px 0;
+}
+
+.previewMarkdown .task-list-item {
+  list-style: none;
+}
+
+.previewMarkdown .task-list-item input[type="checkbox"] {
+  margin-right: 6px;
+}
