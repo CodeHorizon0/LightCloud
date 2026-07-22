@@ -315,6 +315,9 @@ function FolderNode(props: FolderNodeProps) {
                 <span className={styles.groupPathMain}>
                   {item.displayPath}
                 </span>
+                <span className={styles.groupPathName}>
+                  {item.fileName}
+                </span>
               </div>
               <div className={styles.groupColSize}>
                 {formatSize(info.original_size)}

@@ -40,27 +40,21 @@
 .colSelect {
   width: 40px;
 }
-
 .colFolder {
   width: 28%;
 }
-
 .colName {
   width: 22%;
 }
-
 .colSize {
   width: 96px;
 }
-
 .colCompression {
   width: 110px;
 }
-
 .colPreview {
   width: 110px;
 }
-
 .colActions {
   width: 110px;
 }
@@ -317,6 +311,10 @@
   min-width: 0;
 }
 
+.groupPathName {
+  display: none; 
+}
+
 .groupPathSub {
   color: #9ca3af;
   font-size: 11px;
@@ -326,7 +324,6 @@
   white-space: nowrap;
 }
 
-/* ===== Кнопки, используемые в таблице ===== */
 .smallButton,
 .smallDangerButton,
 .ghostButton {
@@ -384,7 +381,6 @@
   opacity: 0.55;
   cursor: not-allowed;
 }
-/* ===== Конец кнопок ===== */
 
 @media (max-width: 760px) {
   .groupList {
@@ -406,29 +402,86 @@
   }
 
   .tableGroupRow {
-    grid-template-columns: 34px 1fr;
-    gap: 6px 8px;
-    padding: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px 6px;
+    border: 1px solid rgba(60, 63, 69, 0.75);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
   }
 
-  .groupColSelect,
-  .groupColPath,
-  .groupColSize,
-  .groupColCompression,
-  .groupColPreview,
-  .groupColActions {
+  .groupColSelect {
+    order: 1;
+    flex: 0 0 18px;
     padding: 0;
   }
 
-  .groupColPath,
-  .groupColSize,
-  .groupColCompression,
-  .groupColPreview,
-  .groupColActions {
-    grid-column: 1 / -1;
-    flex-direction: row;
+  .groupColPath {
+    order: 2;
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+  }
+
+  .groupPathMain {
+    display: none; 
+  }
+
+  .groupPathName {
+    display: inline;
+    color: #e7eaf0;
+    font-size: 16px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .groupColSize {
+    order: 3;
+    flex: 0 0 auto;
+    padding: 0;
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
+  }
+
+  .groupColCompression {
+    order: 4;
+    flex: 0 0 auto;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .groupColPreview {
+    order: 5;
+    flex: 0 0 auto;
+    padding: 0;
+    margin-left: auto; 
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .groupColActions {
+    order: 6;
+    flex: 0 0 auto;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .groupColSize::before,
+  .groupColCompression::before,
+  .groupColPreview::before,
+  .groupColActions::before {
+    display: none !important;
+  }
+
+  .tableActions {
+    gap: 5px;
   }
 
   .tablePanel {
@@ -536,6 +589,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
+    font-size: 16px;
     min-width: 0;
     flex-wrap: nowrap;
     flex-direction: row;
