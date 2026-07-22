@@ -38,15 +38,19 @@ def _format_sse(
 
 
 @router.get("/metadata/stream")
-async def metadata_stream(request: Request) -> StreamingResponse:
+async def metadata_stream(request: Request):
+
     app = request.app
     username = get_authenticated_username(request)
     if not username:
         return Response(status_code=401)
+    
     storage_manager: UserStorageManager = app.state.storage_manager
     storage = await storage_manager.ensure_user_storage(username)
     client_queue: asyncio.Queue[dict[str, str]] = asyncio.Queue(maxsize=256)
+
     await add_client(app, username, client_queue)
+
     async def event_generator() -> AsyncIterator[str]:
         last_meta: object = object()
         event_id = 0
@@ -76,8 +80,14 @@ async def metadata_stream(request: Request) -> StreamingResponse:
                     )
                     last_meta = meta
         except asyncio.CancelledError:
-            return
+            pass
         finally:
             await remove_client(app, username, client_queue)
+            
     headers = {"Cache-Control": "no-cache","Connection": "keep-alive","X-Accel-Buffering": "no"}
-    return StreamingResponse(event_generator(),media_type="text/event-stream",headers=headers)
+
+    return StreamingResponse(
+        event_generator(), 
+        media_type="text/event-stream", 
+        headers=headers
+    )

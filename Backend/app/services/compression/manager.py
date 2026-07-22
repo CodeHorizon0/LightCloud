@@ -270,14 +270,14 @@ def _decompress_payload(
                 digest.update(piece)
                 out_fh.write(piece)
 
-        if algorithm == "zlib":
-            tail = decompressor.flush()
-            if tail:
-                written += len(tail)
-                if written > max_size:
-                    raise CompressionLimitError(f"Decompressed data exceeds limit {max_size}")
-                digest.update(tail)
-                out_fh.write(tail)
+            if algorithm == "zlib":
+                tail = decompressor.flush()  # type: ignore[attr-defined]
+                if tail:
+                    written += len(tail)
+                    if written > max_size:
+                        raise CompressionLimitError(f"Decompressed data exceeds limit {max_size}")
+                    digest.update(tail)
+                    out_fh.write(tail)
 
         if hasattr(decompressor, "eof") and not decompressor.eof:
             raise CompressionIntegrityError("Compressed stream ended prematurely")
@@ -551,7 +551,7 @@ class CompressionManager:
                             yield piece
 
                     if algorithm == "zlib":
-                        tail = decompressor.flush()
+                        tail = decompressor.flush()  # type: ignore[attr-defined]
                         if tail:
                             written += len(tail)
                             if written > limit:

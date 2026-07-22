@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -30,11 +29,14 @@ class Settings:
     compression_min_savings_percent: float
     compression_max_source_size: int
     jwt_secret: str
-    max_file_size: int            # в байтах
+    jwt_algorithm: str            
+    max_file_size: int           
     max_upload_files: int
     max_filename_depth: int
     cookie_secure: bool
     access_token_expire_minutes: int
+    idle_threshold_seconds: int = 300  
+    idle_check_interval_seconds: int = 60
 
 
 def _get_nested(data: dict[str, Any], *keys: str, default: Any) -> Any:
@@ -55,13 +57,13 @@ def load_settings(config_path: Path = CONFIG_PATH) -> Settings:
 
     storage_dir.mkdir(parents=True, exist_ok=True)
 
-    # Параметры ограничений загрузки
     max_file_size_mb = int(config.get("max_file_size_mb", 100))
     max_file_size = max_file_size_mb * 1024 * 1024
     max_upload_files = int(config.get("max_upload_files", 10))
     max_filename_depth = int(config.get("max_filename_depth", 10))
 
     jwt_secret = config.get("jwt_secret", "CHANGE_THIS_SECRET_TO_SOMETHING_STRONG")
+    jwt_algorithm = config.get("jwt_algorithm", "HS256")   # <-- чтение алгоритма
     cookie_secure = bool(config.get("cookie_secure", False))
     access_token_expire_minutes = int(config.get("access_token_expire_minutes", 60))
 
@@ -88,6 +90,7 @@ def load_settings(config_path: Path = CONFIG_PATH) -> Settings:
             _get_nested(config, "compression", "max_source_size", default=2 * 1024 * 1024 * 1024)
         ),
         jwt_secret=jwt_secret,
+        jwt_algorithm=jwt_algorithm,          
         max_file_size=max_file_size,
         max_upload_files=max_upload_files,
         max_filename_depth=max_filename_depth,

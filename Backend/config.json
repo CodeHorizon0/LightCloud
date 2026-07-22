@@ -31,6 +31,7 @@
     "max_source_size": 2147483648
   },
   "jwt_secret": "CHANGE_THIS_SECRET_TO_SOMETHING_STRONG",
+  "jwt_algorithm": "HS512",
   "max_file_size_mb": 2000,
   "max_upload_files": 10,
   "max_filename_depth": 10,

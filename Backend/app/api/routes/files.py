@@ -682,7 +682,12 @@ async def _serve_stored_file(request: Request, filename: str, *, inline: bool) -
                         range_size = stat.st_size
 
                 try:
-                    start, end = _parse_range_header(range_header, range_size)
+                    parsed = _parse_range_header(range_header, range_size)
+                    if parsed is None:
+                        start, end = 0, range_size - 1
+                    else:
+                        start, end = parsed
+
                     part = await _read_file_range(
                         range_target,
                         start,
