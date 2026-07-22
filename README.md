@@ -1,5 +1,5 @@
 # LightCloud
-**LightCloud** - open source cloud storage writen on **fastapi** &amp; **react**. 
+**LightCloud** - open source cloud storage writen on **[fastapi](https://fastapi.tiangolo.com/)** &amp; **[react](https://react.dev/)**. 
 
 > [!WARNING]
 > This project was completed as part of a course project and is not recommended for use in a production environment until it has been significantly improved.
