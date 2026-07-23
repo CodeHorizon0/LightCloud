@@ -26,14 +26,13 @@ createRoot(rootElement).render(
             }
           />
           <Route
-            path="/regin"
+            path="/register"
             element={
               <PublicRoute>
                 <AuthPage mode="register" />
               </PublicRoute>
             }
           />
-          <Route path="/register" element={<Navigate to="/regin" replace />} />
           <Route
             path="/"
             element={

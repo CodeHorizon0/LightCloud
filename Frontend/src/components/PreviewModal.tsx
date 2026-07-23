@@ -60,6 +60,7 @@ function PreviewModal(props: PreviewModalProps) {
 
   const mainVideoRef = useRef<HTMLVideoElement>(null);
   const backdropVideoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const syncFrameRef = useRef<number>(0);
   const lastSyncedTimeRef = useRef<number>(-1);
 
@@ -349,6 +350,16 @@ function PreviewModal(props: PreviewModalProps) {
     };
   }, [preview, previewUrl]);
 
+  useEffect(function() {
+    if (!preview) return;
+    if (preview.kind === "audio" && audioRef.current) {
+      audioRef.current.volume = 0.5;
+    }
+    if (preview.kind === "video" && mainVideoRef.current) {
+      mainVideoRef.current.volume = 0.5;
+    }
+  }, [preview, previewUrl]);
+
   const previewBody = useMemo<React.ReactNode>(function() {
     if (!preview) {
       return null;
@@ -414,6 +425,7 @@ function PreviewModal(props: PreviewModalProps) {
       return (
         <div className={styles.previewAudioShell}>
           <audio
+            ref={audioRef}
             className={styles.previewAudio}
             controls
             preload="metadata"
@@ -538,12 +550,9 @@ function PreviewModal(props: PreviewModalProps) {
             </div>
           </div>
           <div className={styles.previewStats}>
-            <span className={styles.previewBadge}>{preview.kind}</span>
-            <span className={styles.previewBadge}>{formatBytes(preview.size)}</span>
+            <span className={styles.previewBadge}>{preview.kind} {formatBytes(preview.size)}</span>
+            <button type="button" className={styles.previewCloseButton} onClick={onClose}>+</button>
           </div>
-          <button type="button" className={styles.previewCloseButton} onClick={onClose}>
-            +
-          </button>
         </div>
         <div className={previewBodyClassName}>{previewBody}</div>
       </div>

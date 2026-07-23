@@ -1,57 +1,50 @@
 // RouteGuards.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import Spinner from "./Spinner";
 
-interface FullScreenLoaderProps {}
-
-function FullScreenLoader(props: FullScreenLoaderProps) {
+function FullScreenLoader() {
   return (
     <div
       style={{
         minHeight: "100vh",
         minWidth: "100vw",
-        display: "grid",
-        placeItems: "center",
-        fontFamily: "system-ui, sans-serif",
-        fontSize: 16,
-        color: "#666",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         background: "#0f1115",
       }}
     >
-      Session check...
+      <Spinner />
     </div>
   );
 }
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
-export function ProtectedRoute(props: ProtectedRouteProps) {
-  const children = props.children;
+export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
+
   if (auth.loading) {
     return <FullScreenLoader />;
   }
+
   if (!auth.user) {
     return <Navigate to="/login" replace />;
   }
-  return children;
+
+  return <>{children}</>;
 }
 
-interface PublicRouteProps {
-  children: React.ReactNode;
-}
-
-export function PublicRoute(props: PublicRouteProps) {
-  const children = props.children;
+export function PublicRoute({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
+
   if (auth.loading) {
     return <FullScreenLoader />;
   }
+
   if (auth.user) {
     return <Navigate to="/" replace />;
   }
-  return children;
+
+  return <>{children}</>;
 }
