@@ -17,11 +17,11 @@ The application uses a headless architecture because the backend and frontend ar
 7. Adaptive UI design for PCs and phones
 
 ## Planned Features
-1. Advanced Preview (~~Markdown formatting~~, code highlighting)
+1. Advanced Preview (~~Markdown formatting~~, code highlighting) - Slow refactoring
 2. Expanding the list of supported files for compression and preview
 3. Offline Cache Viewing in PWA Mode
 4. ~~Some frontend changes for improved responsiveness~~
-5. ~~Backend optimizations, especially RAM consumption when uploading files~~
+5. ~~Backend optimizations, especially RAM consumption when uploading files~~ - Idle mode
 6. Files for deployment via Docker
 7. Vulnerability fixes and code refactoring
 8. File sharing
