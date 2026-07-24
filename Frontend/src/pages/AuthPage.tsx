@@ -6,6 +6,7 @@ import {
   validateUsername,
   useAuth,
 } from "../auth/AuthContext";
+import styles from "./AuthPage.module.css";
 
 interface AuthPageProps {
   mode: "login" | "register";
@@ -61,46 +62,19 @@ export default function AuthPage(props: AuthPageProps): React.ReactElement {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        minWidth: "100%",
-        display: "grid",
-        placeItems: "center",
-        background:
-          "radial-gradient(circle at top, rgba(80, 120, 255, 0.16), transparent 35%), #0f1115",
-        color: "#eaeef7",
-        padding: 12,
-        fontFamily: "system-ui, sans-serif",
-      }}
-    >
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          width: "100%",
-          maxWidth: 420,
-          background: "rgba(18, 22, 31, 0.95)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: 16,
-          padding: 20,
-          boxShadow: "0 18px 50px rgba(0,0,0,0.35)",
-        }}
-      >
-        <div style={{ marginBottom: 20 }}>
-          <h1 style={{ margin: 0, fontSize: 30, lineHeight: 1.1 }}>
-            {isLogin ? "Sign In" : "Sign Up"}
-          </h1>
-          <p style={{ margin: "8px 0 0", color: "#9aa4b2" }}>
+    <div className={styles.container}>
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>{isLogin ? "Sign In" : "Sign Up"}</h1>
+          <p className={styles.subtitle}>
             {isLogin
               ? "Please sign in to use storage"
               : "Create an account to get started"}
           </p>
         </div>
 
-        <label style={{ display: "block", marginBottom: 14 }}>
-          <div style={{ marginBottom: 6, fontSize: 13, color: "#cdd6e1" }}>
-            Username
-          </div>
+        <label className={styles.field}>
+          <div className={styles.fieldLabel}>Username</div>
           <input
             value={username}
             onChange={onUsernameChange}
@@ -115,23 +89,12 @@ export default function AuthPage(props: AuthPageProps): React.ReactElement {
             pattern="[A-Za-z0-9._]{3,32}"
             placeholder="user_name"
             title="3-32 characters: letters, numbers, dot and underscore"
-            style={{
-              width: "100%",
-              boxSizing: "border-box",
-              borderRadius: 10,
-              border: "1px solid rgba(255,255,255,0.10)",
-              background: "#0b0e14",
-              color: "#fff",
-              padding: "10px 12px",
-              outline: "none",
-            }}
+            className={styles.input}
           />
         </label>
 
-        <label style={{ display: "block", marginBottom: 18 }}>
-          <div style={{ marginBottom: 6, fontSize: 13, color: "#cdd6e1" }}>
-            Password
-          </div>
+        <label className={styles.field}>
+          <div className={styles.fieldLabel}>Password</div>
           <input
             type="password"
             value={password}
@@ -142,67 +105,34 @@ export default function AuthPage(props: AuthPageProps): React.ReactElement {
             maxLength={128}
             placeholder="••••••••"
             title="8-128 characters"
-            style={{
-              width: "100%",
-              boxSizing: "border-box",
-              borderRadius: 10,
-              border: "1px solid rgba(255,255,255,0.10)",
-              background: "#0b0e14",
-              color: "#fff",
-              padding: "10px 12px",
-              outline: "none",
-            }}
+            className={styles.input}
           />
         </label>
 
         {error ? (
-          <div
-            style={{
-              marginBottom: 12,
-              padding: "10px 12px",
-              borderRadius: 10,
-              background: "rgba(255, 72, 72, 0.12)",
-              border: "1px solid rgba(255, 72, 72, 0.22)",
-              color: "#ffb4b4",
-              fontSize: 14,
-              whiteSpace: "pre-wrap",
-              wordBreak: "break-word",
-            }}
-          >
-            {error}
-          </div>
+          <div className={styles.error}>{error}</div>
         ) : null}
 
         <button
           type="submit"
           disabled={busy}
-          style={{
-            width: "100%",
-            border: "none",
-            borderRadius: 10,
-            padding: "10px 12px",
-            background: busy ? "#5c6b82" : "#5b8cff",
-            color: "#fff",
-            fontWeight: 700,
-            cursor: busy ? "not-allowed" : "pointer",
-            marginBottom: 14,
-          }}
+          className={`${styles.button} ${busy ? styles.buttonBusy : ""}`}
         >
           {busy ? "Please wait..." : isLogin ? "Sign In" : "Create Account"}
         </button>
 
-        <div style={{ color: "#9aa4b2", fontSize: 14 }}>
+        <div className={styles.footer}>
           {isLogin ? (
             <>
               Don't have an account?{" "}
-              <Link to="/regin" style={{ color: "#8ab4ff", textDecoration: "none" }}>
+              <Link to="/register" className={styles.link}>
                 Sign Up
               </Link>
             </>
           ) : (
             <>
               Already have an account?{" "}
-              <Link to="/login" style={{ color: "#8ab4ff", textDecoration: "none" }}>
+              <Link to="/login" className={styles.link}>
                 Sign In
               </Link>
             </>

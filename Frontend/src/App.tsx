@@ -77,7 +77,9 @@ const UPLOAD_RETRY_COUNT = 2;
 const UPLOAD_RETRY_DELAY_MS = 500;
 
 function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(function (resolve) {
+    setTimeout(resolve, ms);
+  });
 }
 
 function getResponseMessage(xhr: XMLHttpRequest): string {
@@ -145,22 +147,24 @@ function App(props: AppProps): ReactNode {
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [previewItem, setPreviewItem] = useState<PreviewItem | null>(null);
 
-  useEffect(() => {
+  useEffect(function () {
     selectedItemsRef.current = selectedItems;
   }, [selectedItems]);
 
-  useEffect(() => {
+  useEffect(function () {
     isMountedRef.current = true;
-    return () => {
+    return function () {
       isMountedRef.current = false;
     };
   }, []);
 
-  const metadataEntries = useMemo<Entry[]>(() => {
-    return Object.entries(metadata).sort((a, b) => a[0].localeCompare(b[0])) as Entry[];
+  const metadataEntries = useMemo<Entry[]>(function () {
+    return Object.entries(metadata).sort(function (a, b) {
+      return a[0].localeCompare(b[0]);
+    }) as Entry[];
   }, [metadata]);
 
-  const metadataIndexMap = useMemo<Map<string, number>>(() => {
+  const metadataIndexMap = useMemo<Map<string, number>>(function () {
     const map = new Map<string, number>();
     for (let i = 0; i < metadataEntries.length; i += 1) {
       map.set(metadataEntries[i][0], i);
@@ -168,10 +172,14 @@ function App(props: AppProps): ReactNode {
     return map;
   }, [metadataEntries]);
 
-  useEffect(() => {
-    const allowed = new Set(metadataEntries.map((entry) => entry[0]));
-    setSelectedMetadataPaths((prev: string[]) => {
-      const next = prev.filter((path) => allowed.has(path));
+  useEffect(function () {
+    const allowed = new Set(metadataEntries.map(function (entry) {
+      return entry[0];
+    }));
+    setSelectedMetadataPaths(function (prev: string[]) {
+      const next = prev.filter(function (path) {
+        return allowed.has(path);
+      });
       if (next.length !== prev.length) return next;
       for (let i = 0; i < next.length; i += 1) {
         if (next[i] !== prev[i]) return next;
@@ -187,113 +195,122 @@ function App(props: AppProps): ReactNode {
     }
   }, [metadataEntries]);
 
-  const setStatus = useCallback((message: string, tone?: StatusTone) => {
+  function setStatus(message: string, tone?: StatusTone) {
     if (!isMountedRef.current) return;
     setStatusText(message);
     setStatusTone(tone || "muted");
-  }, []);
+  }
 
-  const updateItem = useCallback((itemId: string, updater: (item: UploadItem) => UploadItem) => {
-    setSelectedItems((prev: UploadItem[]) =>
-      prev.map((item) => (item.id === itemId ? updater(item) : item))
+  function updateItem(itemId: string, updater: (item: UploadItem) => UploadItem) {
+    setSelectedItems(function (prev: UploadItem[]) {
+      return prev.map(function (item) {
+        return item.id === itemId ? updater(item) : item;
+      });
+    });
+  }
+
+  function addIncomingItems(incomingItems: UploadItem[]) {
+    if (!incomingItems || incomingItems.length === 0) {
+      setStatus("Empty files and folders are not uploaded", "warn");
+      return;
+    }
+
+    const validItems: UploadItem[] = [];
+    for (const item of incomingItems) {
+      if (item && item.file && isNonEmptyFile(item.file)) {
+        validItems.push(item);
+      }
+    }
+
+    if (validItems.length === 0) {
+      setStatus("Empty files and folders are not uploaded", "warn");
+      return;
+    }
+
+    setSelectedItems(function (prev: UploadItem[]) {
+      return mergeUniqueItems(prev, validItems);
+    });
+
+    setStatus(
+      validItems.length !== incomingItems.length
+        ? "Empty files skipped, rest added to queue"
+        : "Files added to queue",
+      validItems.length !== incomingItems.length ? "warn" : "ok"
     );
-  }, []);
+  }
 
-  const addIncomingItems = useCallback(
-    (incomingItems: UploadItem[]) => {
-      if (!incomingItems || incomingItems.length === 0) {
-        setStatus("Empty files and folders are not uploaded", "warn");
-        return;
-      }
-
-      const validItems: UploadItem[] = [];
-      for (const item of incomingItems) {
-        if (item && item.file && isNonEmptyFile(item.file)) {
-          validItems.push(item);
-        }
-      }
-
-      if (validItems.length === 0) {
-        setStatus("Empty files and folders are not uploaded", "warn");
-        return;
-      }
-
-      setSelectedItems((prev: UploadItem[]) => mergeUniqueItems(prev, validItems));
-
-      setStatus(
-        validItems.length !== incomingItems.length
-          ? "Empty files skipped, rest added to queue"
-          : "Files added to queue",
-        validItems.length !== incomingItems.length ? "warn" : "ok"
-      );
-    },
-    [setStatus]
-  );
-
-  const clearSelection = useCallback(() => {
+  function clearSelection() {
     if (isUploadingRef.current) return;
     setSelectedItems([]);
     setStatus("Queue cleared", "muted");
-  }, [setStatus]);
+  }
 
-  const handleLogout = useCallback(() => {
+  function handleLogout() {
     return Promise.resolve()
-      .then(() => auth.logout())
-      .finally(() => navigate("/login", { replace: true }));
-  }, [auth, navigate]);
+      .then(function () {
+        return auth.logout();
+      })
+      .finally(function () {
+        return navigate("/login", { replace: true });
+      });
+  }
 
-  const deleteFiles = useCallback(
-    async (paths: string[]): Promise<void> => {
-      const normalizedPaths: string[] = [];
-      const seen = new Set<string>();
+  function deleteFiles(paths: string[]): Promise<void> {
+    const normalizedPaths: string[] = [];
+    const seen = new Set<string>();
 
-      for (const p of paths) {
-        const cleanPath = normalizePath(p);
-        if (!cleanPath || seen.has(cleanPath)) continue;
-        seen.add(cleanPath);
-        normalizedPaths.push(cleanPath);
-      }
+    for (const p of paths) {
+      const cleanPath = normalizePath(p);
+      if (!cleanPath || seen.has(cleanPath)) continue;
+      seen.add(cleanPath);
+      normalizedPaths.push(cleanPath);
+    }
 
-      if (normalizedPaths.length === 0) {
-        setStatus("Nothing to delete", "warn");
-        return;
-      }
+    if (normalizedPaths.length === 0) {
+      setStatus("Nothing to delete", "warn");
+      return Promise.resolve();
+    }
 
-      setIsDeleting(true);
-      setStatus(`Deleting: ${normalizedPaths.length} files`, "muted");
+    setIsDeleting(true);
+    setStatus(`Deleting: ${normalizedPaths.length} files`, "muted");
 
-      try {
-        const response = await fetch(`${API_BASE}/delete`, {
-          method: "DELETE",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(buildDeleteRequestBody(normalizedPaths)),
+    return fetch(`${API_BASE}/delete`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(buildDeleteRequestBody(normalizedPaths)),
+    })
+      .then(function (response) {
+        return response.json().catch(function () {
+          return null;
+        }).then(function (data) {
+          if (!response.ok) {
+            throw new Error(
+              (data && (data.detail || data.message)) || `Delete failed: ${response.status}`
+            );
+          }
+          return data;
         });
-
-        const data = await response.json().catch(() => null);
-
-        if (!response.ok) {
-          throw new Error(
-            (data && (data.detail || data.message)) || `Delete failed: ${response.status}`
-          );
-        }
-
+      })
+      .then(function (data) {
         const deleted: string[] = data && Array.isArray(data.deleted) ? data.deleted : normalizedPaths;
         const missing: string[] = data && Array.isArray(data.missing) ? data.missing : [];
 
-        setMetadata((prev) => {
+        setMetadata(function (prev) {
           const next = { ...prev };
           for (const d of deleted) delete next[d];
           for (const m of missing) delete next[m];
           return next;
         });
 
-        setSelectedMetadataPaths((prev: string[]) => {
+        setSelectedMetadataPaths(function (prev: string[]) {
           const deletedSet = new Set([...deleted, ...missing]);
-          return prev.filter((path) => !deletedSet.has(path));
+          return prev.filter(function (path) {
+            return !deletedSet.has(path);
+          });
         });
 
         setStatus(
@@ -302,17 +319,17 @@ function App(props: AppProps): ReactNode {
             : `Deleted: ${deleted.length}`,
           missing.length > 0 ? "warn" : "ok"
         );
-      } catch (error) {
+      })
+      .catch(function (error) {
         console.error(error);
         setStatus("Failed to delete files", "danger");
-      } finally {
+      })
+      .finally(function () {
         setIsDeleting(false);
-      }
-    },
-    [setStatus]
-  );
+      });
+  }
 
-  const handleDeleteAccount = useCallback(() => {
+  function handleDeleteAccount() {
     const confirmed = window.confirm("Delete account? This action cannot be undone.");
     if (!confirmed) return;
 
@@ -321,156 +338,151 @@ function App(props: AppProps): ReactNode {
       credentials: "include",
       headers: { Accept: "application/json" },
     })
-      .then((response) => {
+      .then(function (response) {
         if (!response.ok && response.status !== 404) {
           throw new Error("Delete account failed");
         }
         return auth.logout();
       })
-      .then(() => navigate("/login", { replace: true }))
-      .catch((error) => {
+      .then(function () {
+        return navigate("/login", { replace: true });
+      })
+      .catch(function (error) {
         console.error(error);
         setStatus("Failed to delete account", "danger");
       });
-  }, [auth, navigate, setStatus]);
+  }
 
-  const handlePickFiles = useCallback(() => {
+  function handlePickFiles() {
     fileInputRef.current?.click();
-  }, []);
+  }
 
-  const handlePickFolder = useCallback(() => {
+  function handlePickFolder() {
     folderInputRef.current?.click();
-  }, []);
+  }
 
-  const readFilesFromInput = useCallback(
-    (files: FileList | File[], useRelativePath: boolean): UploadItem[] => {
-      const fileList = Array.isArray(files) ? files : Array.from(files);
-      const incoming: UploadItem[] = [];
-      for (const file of fileList) {
-        if (!isNonEmptyFile(file)) continue;
-        const relativePath = useRelativePath
-          ? (file as File & { webkitRelativePath?: string }).webkitRelativePath || file.name
-          : file.name;
-        incoming.push(createUploadItem(file, relativePath));
-      }
-      return incoming;
-    },
-    []
-  );
+  function readFilesFromInput(files: FileList | File[], useRelativePath: boolean): UploadItem[] {
+    const fileList = Array.isArray(files) ? files : Array.from(files);
+    const incoming: UploadItem[] = [];
+    for (const file of fileList) {
+      if (!isNonEmptyFile(file)) continue;
+      const relativePath = useRelativePath
+        ? (file as File & { webkitRelativePath?: string }).webkitRelativePath || file.name
+        : file.name;
+      incoming.push(createUploadItem(file, relativePath));
+    }
+    return incoming;
+  }
 
-  const handleFilesInputChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const files = event.target.files;
-      if (!files || files.length === 0) return;
-      const incoming = readFilesFromInput(files, false);
-      addIncomingItems(incoming);
-      event.target.value = "";
-    },
-    [addIncomingItems, readFilesFromInput]
-  );
+  function handleFilesInputChange(event: ChangeEvent<HTMLInputElement>) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    const incoming = readFilesFromInput(files, false);
+    addIncomingItems(incoming);
+    event.target.value = "";
+  }
 
-  const handleFolderInputChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const files = event.target.files;
-      if (!files || files.length === 0) return;
-      const incoming = readFilesFromInput(files, true);
-      addIncomingItems(incoming);
-      event.target.value = "";
-    },
-    [addIncomingItems, readFilesFromInput]
-  );
+  function handleFolderInputChange(event: ChangeEvent<HTMLInputElement>) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    const incoming = readFilesFromInput(files, true);
+    addIncomingItems(incoming);
+    event.target.value = "";
+  }
 
-  const uploadBatch = useCallback(
-    (batch: UploadItem[], batchIndex: number, totalBatches: number): Promise<string> => {
-      return new Promise((resolve, reject) => {
-        const formData = new FormData();
-        appendUploadFiles(formData, batch);
+  function uploadBatch(batch: UploadItem[], batchIndex: number, totalBatches: number): Promise<string> {
+    return new Promise(function (resolve, reject) {
+      const formData = new FormData();
+      appendUploadFiles(formData, batch);
 
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", `${API_BASE}/upload`, true);
-        xhr.withCredentials = true;
-        xhr.setRequestHeader("Accept", "application/json");
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", `${API_BASE}/upload`, true);
+      xhr.withCredentials = true;
+      xhr.setRequestHeader("Accept", "application/json");
 
-        const batchProgress = buildBatchProgressMap(batch);
+      const batchProgress = buildBatchProgressMap(batch);
 
-        xhr.upload.onprogress = (progressEvent: ProgressEvent) => {
-          if (!progressEvent.lengthComputable) return;
+      xhr.upload.onprogress = function (progressEvent: ProgressEvent) {
+        if (!progressEvent.lengthComputable) return;
 
-          const loaded = Math.max(0, Math.min(progressEvent.loaded, batchProgress.total));
+        const loaded = Math.max(0, Math.min(progressEvent.loaded, batchProgress.total));
 
-          for (const range of batchProgress.ranges) {
-            let progress = 0;
-            if (loaded >= range.end) {
-              progress = 100;
-            } else if (loaded > range.start) {
-              progress = ((loaded - range.start) / range.size) * 100;
-            }
-            updateItem(range.id, (current) => ({
+        for (const range of batchProgress.ranges) {
+          let progress = 0;
+          if (loaded >= range.end) {
+            progress = 100;
+          } else if (loaded > range.start) {
+            progress = ((loaded - range.start) / range.size) * 100;
+          }
+          updateItem(range.id, function (current) {
+            return {
               ...current,
               progress: Math.max(0, Math.min(100, progress)),
               status: progress >= 100 ? "processing" : "uploading",
-            }));
-          }
+            };
+          });
+        }
 
-          const percent = Math.round((loaded / batchProgress.total) * 100);
-          setStatus(`Uploading batch ${batchIndex + 1}/${totalBatches}: ${percent}%`, "muted");
-        };
+        const percent = Math.round((loaded / batchProgress.total) * 100);
+        setStatus(`Uploading batch ${batchIndex + 1}/${totalBatches}: ${percent}%`, "muted");
+      };
 
-        xhr.upload.onload = () => {
-          for (const item of batch) {
-            updateItem(item.id, (current) => ({
+      xhr.upload.onload = function () {
+        for (const item of batch) {
+          updateItem(item.id, function (current) {
+            return {
               ...current,
               progress: 100,
               status: "processing",
-            }));
-          }
-        };
+            };
+          });
+        }
+      };
 
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve(xhr.responseText);
-          } else {
-            reject(new Error(getResponseMessage(xhr)));
-          }
-        };
+      xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(xhr.responseText);
+        } else {
+          reject(new Error(getResponseMessage(xhr)));
+        }
+      };
 
-        xhr.onerror = () => {
-          reject(new Error("Network error"));
-        };
+      xhr.onerror = function () {
+        reject(new Error("Network error"));
+      };
 
-        xhr.send(formData);
-      });
-    },
-    [setStatus, updateItem]
-  );
+      xhr.send(formData);
+    });
+  }
 
-  const uploadBatchWithRetry = useCallback(
-    async (batch: UploadItem[], batchIndex: number, totalBatches: number): Promise<string | null> => {
-      let attempt = 0;
-      while (attempt <= UPLOAD_RETRY_COUNT) {
-        try {
-          return await uploadBatch(batch, batchIndex, totalBatches);
-        } catch (error) {
+  function uploadBatchWithRetry(batch: UploadItem[], batchIndex: number, totalBatches: number): Promise<string | null> {
+    let attempt = 0;
+    function attemptUpload(): Promise<string | null> {
+      return uploadBatch(batch, batchIndex, totalBatches)
+        .catch(function (error) {
           attempt += 1;
           if (attempt > UPLOAD_RETRY_COUNT) throw error;
           setStatus(
             `Retrying upload batch ${batchIndex + 1}/${totalBatches} in ${UPLOAD_RETRY_DELAY_MS} ms`,
             "warn"
           );
-          await sleep(UPLOAD_RETRY_DELAY_MS * Math.pow(2, attempt - 1));
-        }
-      }
-      return null;
-    },
-    [setStatus, uploadBatch]
-  );
+          return sleep(UPLOAD_RETRY_DELAY_MS * Math.pow(2, attempt - 1))
+            .then(function () {
+              return attemptUpload();
+            });
+        });
+    }
+    return attemptUpload();
+  }
 
-  const handleUploadSelected = useCallback(async () => {
+  function handleUploadSelected() {
     if (isUploadingRef.current) return;
 
     const snapshot = selectedItemsRef.current.slice();
     const pendingItems: UploadItem[] = snapshot.filter(
-      (item) => item.status !== "uploading" && item.status !== "processing"
+      function (item) {
+        return item.status !== "uploading" && item.status !== "processing";
+      }
     );
 
     if (pendingItems.length === 0) {
@@ -489,66 +501,79 @@ function App(props: AppProps): ReactNode {
     let successCount = 0;
     let errorCount = 0;
 
-    try {
-      for (let index = 0; index < batches.length; index += 1) {
-        const batch: UploadItem[] = batches[index];
+    function processBatch(index: number): Promise<void> {
+      if (index >= batches.length) return Promise.resolve();
 
-        for (const item of batch) {
-          updateItem(item.id, (current) => ({
+      const batch = batches[index];
+
+      for (const item of batch) {
+        updateItem(item.id, function (current) {
+          return {
             ...current,
             progress: 0,
             status: "uploading",
-          }));
-        }
+          };
+        });
+      }
 
-        try {
-          await uploadBatchWithRetry(batch, index, batches.length);
+      return uploadBatchWithRetry(batch, index, batches.length)
+        .then(function () {
           successCount += batch.length;
 
-          setSelectedItems((prev: UploadItem[]) => {
-            const batchIds = new Set(batch.map((item) => item.id));
-            return prev.filter((item) => !batchIds.has(item.id));
+          setSelectedItems(function (prev: UploadItem[]) {
+            const batchIds = new Set(batch.map(function (item) {
+              return item.id;
+            }));
+            return prev.filter(function (item) {
+              return !batchIds.has(item.id);
+            });
           });
 
           setStatus(
             `Uploaded: ${successCount}, errors: ${errorCount}`,
             errorCount > 0 ? "warn" : "ok"
           );
-        } catch (error) {
+          return processBatch(index + 1);
+        })
+        .catch(function (error) {
           errorCount += batch.length;
           console.error(error);
           for (const item of batch) {
-            updateItem(item.id, (current) => ({
-              ...current,
-              progress: 0,
-              status: "error",
-            }));
+            updateItem(item.id, function (current) {
+              return {
+                ...current,
+                progress: 0,
+                status: "error",
+              };
+            });
           }
           setStatus(`Error in batch ${index + 1}/${batches.length}`, "danger");
-        }
-
-        if (!isMountedRef.current) break;
-      }
-    } finally {
-      isUploadingRef.current = false;
-      setIsUploading(false);
-      if (successCount === 0 && errorCount === 0) {
-        setStatus("Upload finished", "muted");
-      } else {
-        setStatus(
-          `Done. Success: ${successCount}, errors: ${errorCount}`,
-          errorCount > 0 ? "warn" : "ok"
-        );
-      }
+          return processBatch(index + 1);
+        });
     }
-  }, [setStatus, updateItem, uploadBatchWithRetry]);
 
-  const downloadFile = useCallback(
-    async (path: string): Promise<void> => {
-      try {
-        const response = await fetch(buildDownloadUrl(path), { credentials: "include" });
+    processBatch(0)
+      .finally(function () {
+        isUploadingRef.current = false;
+        setIsUploading(false);
+        if (successCount === 0 && errorCount === 0) {
+          setStatus("Upload finished", "muted");
+        } else {
+          setStatus(
+            `Done. Success: ${successCount}, errors: ${errorCount}`,
+            errorCount > 0 ? "warn" : "ok"
+          );
+        }
+      });
+  }
+
+  function downloadFile(path: string): Promise<void> {
+    return fetch(buildDownloadUrl(path), { credentials: "include" })
+      .then(function (response) {
         if (!response.ok) throw new Error("Download failed");
-        const blob = await response.blob();
+        return response.blob();
+      })
+      .then(function (blob) {
         const objectUrl = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = objectUrl;
@@ -559,220 +584,210 @@ function App(props: AppProps): ReactNode {
         link.remove();
         URL.revokeObjectURL(objectUrl);
         setStatus(`Downloaded: ${path}`, "ok");
-      } catch (error) {
+      })
+      .catch(function (error) {
         console.error(error);
         setStatus(`Failed to download: ${path}`, "danger");
-      }
-    },
-    [setStatus]
-  );
-
-  const removeFile = useCallback(
-    (path: string): Promise<void> => deleteFiles([path]),
-    [deleteFiles]
-  );
-
-  const toggleMetadataSelection = useCallback(
-    (path: string, event?: React.MouseEvent | ChangeEvent<HTMLInputElement>, index?: number) => {
-      const cleanPath = normalizePath(path);
-      const checked = event && "currentTarget" in event ? !!(event.currentTarget as HTMLInputElement).checked : false;
-      const shiftKey = !!(event && ((event as React.MouseEvent).shiftKey || (event as React.MouseEvent).nativeEvent?.shiftKey));
-      const currentIndex = typeof index === "number" ? index : metadataIndexMap.get(cleanPath);
-
-      setSelectedMetadataPaths((prev: string[]) => {
-        const orderedPaths = metadataEntries.map((entry) => entry[0]);
-        const selected = new Set(prev);
-        const anchorIndex = lastSelectedIndexRef.current;
-
-        if (shiftKey && anchorIndex != null && currentIndex != null) {
-          const start = Math.min(anchorIndex, currentIndex);
-          const end = Math.max(anchorIndex, currentIndex);
-          for (let i = start; i <= end; i += 1) {
-            const rangePath = orderedPaths[i];
-            if (!rangePath) continue;
-            if (checked) selected.add(rangePath);
-            else selected.delete(rangePath);
-          }
-        } else if (checked) {
-          selected.add(cleanPath);
-        } else {
-          selected.delete(cleanPath);
-        }
-        return orderedPaths.filter((p) => selected.has(p));
       });
+  }
 
-      if (currentIndex != null) {
-        lastSelectedIndexRef.current = currentIndex;
+  function removeFile(path: string): Promise<void> {
+    return deleteFiles([path]);
+  }
+
+  function toggleMetadataSelection(
+    path: string,
+    event?: React.MouseEvent | ChangeEvent<HTMLInputElement>,
+    index?: number
+  ) {
+    const cleanPath = normalizePath(path);
+    const checked = event && "currentTarget" in event ? !!(event.currentTarget as HTMLInputElement).checked : false;
+    const shiftKey = !!(event && ((event as React.MouseEvent).shiftKey || (event as React.MouseEvent).nativeEvent?.shiftKey));
+    const currentIndex = typeof index === "number" ? index : metadataIndexMap.get(cleanPath);
+
+    setSelectedMetadataPaths(function (prev: string[]) {
+      const orderedPaths = metadataEntries.map(function (entry) {
+        return entry[0];
+      });
+      const selected = new Set(prev);
+      const anchorIndex = lastSelectedIndexRef.current;
+
+      if (shiftKey && anchorIndex != null && currentIndex != null) {
+        const start = Math.min(anchorIndex, currentIndex);
+        const end = Math.max(anchorIndex, currentIndex);
+        for (let i = start; i <= end; i += 1) {
+          const rangePath = orderedPaths[i];
+          if (!rangePath) continue;
+          if (checked) selected.add(rangePath);
+          else selected.delete(rangePath);
+        }
+      } else if (checked) {
+        selected.add(cleanPath);
+      } else {
+        selected.delete(cleanPath);
       }
-    },
-    [metadataEntries, metadataIndexMap]
-  );
+      return orderedPaths.filter(function (p) {
+        return selected.has(p);
+      });
+    });
 
-  const selectAllMetadata = useCallback(() => {
+    if (currentIndex != null) {
+      lastSelectedIndexRef.current = currentIndex;
+    }
+  }
+
+  function selectAllMetadata() {
     if (metadataEntries.length === 0) return;
-    setSelectedMetadataPaths((prev: string[]) => {
+    setSelectedMetadataPaths(function (prev: string[]) {
       if (prev.length === metadataEntries.length) {
         lastSelectedIndexRef.current = null;
         return [];
       }
       lastSelectedIndexRef.current = metadataEntries.length - 1;
-      return metadataEntries.map((entry) => entry[0]);
+      return metadataEntries.map(function (entry) {
+        return entry[0];
+      });
     });
-  }, [metadataEntries]);
+  }
 
-  const toggleMetadataGroup = useCallback(
-    (groupPaths: string[], checked: boolean) => {
-      const normalized: string[] = [];
-      const seen = new Set<string>();
-      for (const p of groupPaths) {
-        const cleanPath = normalizePath(p);
-        if (!cleanPath || seen.has(cleanPath)) continue;
-        seen.add(cleanPath);
-        normalized.push(cleanPath);
+  function toggleMetadataGroup(groupPaths: string[], checked: boolean) {
+    const normalized: string[] = [];
+    const seen = new Set<string>();
+    for (const p of groupPaths) {
+      const cleanPath = normalizePath(p);
+      if (!cleanPath || seen.has(cleanPath)) continue;
+      seen.add(cleanPath);
+      normalized.push(cleanPath);
+    }
+    if (normalized.length === 0) return;
+
+    setSelectedMetadataPaths(function (prev: string[]) {
+      const next = new Set(prev);
+      for (const p of normalized) {
+        if (checked) next.add(p);
+        else next.delete(p);
       }
-      if (normalized.length === 0) return;
-
-      setSelectedMetadataPaths((prev: string[]) => {
-        const next = new Set(prev);
-        for (const p of normalized) {
-          if (checked) next.add(p);
-          else next.delete(p);
-        }
-        return metadataEntries.map((entry) => entry[0]).filter((p) => next.has(p));
+      return metadataEntries.map(function (entry) {
+        return entry[0];
+      }).filter(function (p) {
+        return next.has(p);
       });
+    });
 
-      const lastPath = normalized[normalized.length - 1];
-      const nextIndex = metadataIndexMap.get(lastPath);
-      if (typeof nextIndex === "number") {
-        lastSelectedIndexRef.current = nextIndex;
-      }
-    },
-    [metadataEntries, metadataIndexMap]
-  );
+    const lastPath = normalized[normalized.length - 1];
+    const nextIndex = metadataIndexMap.get(lastPath);
+    if (typeof nextIndex === "number") {
+      lastSelectedIndexRef.current = nextIndex;
+    }
+  }
 
-  const deleteSelectedMetadata = useCallback((): Promise<void> => {
+  function deleteSelectedMetadata(): Promise<void> {
     return deleteFiles(selectedMetadataPaths);
-  }, [deleteFiles, selectedMetadataPaths]);
+  }
 
-  const canPreview = useCallback(
-    (path: string, info?: unknown): boolean => {
-      return getPreviewKind(path, info) != null;
-    },
-    []
-  );
+  function canPreview(path: string, info?: unknown): boolean {
+    return getPreviewKind(path, info) != null;
+  }
 
-  const handlePreview = useCallback(
-    (path: string, info?: unknown): void => {
-      const cleanPath = normalizePath(path);
-      const kind = getPreviewKind(cleanPath, info);
-      if (!kind) {
-        setStatus("Preview unavailable for this file", "warn");
-        return;
-      }
-      setPreviewItem({
-        path: cleanPath,
-        kind: kind as PreviewItem["kind"],
-        title: getFileName(cleanPath) || cleanPath,
-        size: info && typeof info === "object" && "original_size" in info ? (info as any).original_size : 0,
-        url: buildPreviewUrl(cleanPath),
-      });
-    },
-    [setStatus]
-  );
+  function handlePreview(path: string, info?: unknown): void {
+    const cleanPath = normalizePath(path);
+    const kind = getPreviewKind(cleanPath, info);
+    if (!kind) {
+      setStatus("Preview unavailable for this file", "warn");
+      return;
+    }
+    setPreviewItem({
+      path: cleanPath,
+      kind: kind as PreviewItem["kind"],
+      title: getFileName(cleanPath) || cleanPath,
+      size: info && typeof info === "object" && "original_size" in info ? (info as any).original_size : 0,
+      url: buildPreviewUrl(cleanPath),
+    });
+  }
 
-  const handleClosePreview = useCallback(() => {
+  function handleClosePreview() {
     setPreviewItem(null);
-  }, []);
+  }
 
-  const collectDroppedItems = useCallback(
-    async (dt: DataTransfer): Promise<UploadItem[]> => {
-      const incomingItems: UploadItem[] = [];
+  function collectDroppedItems(dt: DataTransfer): Promise<UploadItem[]> {
+    const incomingItems: UploadItem[] = [];
 
-      if (dt.items && dt.items.length > 0) {
-        const tasks: Promise<UploadItem[]>[] = [];
-        for (let i = 0; i < dt.items.length; i += 1) {
-          const dataItem = dt.items[i];
-          const entry = dataItem.webkitGetAsEntry?.();
-          if (entry) {
-            tasks.push(traverseEntry(entry, ""));
-            continue;
-          }
-          const file = dataItem.getAsFile?.();
-          if (file && isNonEmptyFile(file)) {
-            incomingItems.push(createUploadItem(file, file.name));
-          }
+    if (dt.items && dt.items.length > 0) {
+      const tasks: Promise<UploadItem[]>[] = [];
+      for (let i = 0; i < dt.items.length; i += 1) {
+        const dataItem = dt.items[i];
+        const entry = dataItem.webkitGetAsEntry?.();
+        if (entry) {
+          tasks.push(traverseEntry(entry, ""));
+          continue;
         }
-        if (tasks.length > 0) {
-          const results = await Promise.all(tasks);
+        const file = dataItem.getAsFile?.();
+        if (file && isNonEmptyFile(file)) {
+          incomingItems.push(createUploadItem(file, file.name));
+        }
+      }
+      if (tasks.length > 0) {
+        return Promise.all(tasks).then(function (results) {
           for (const res of results) {
             incomingItems.push(...res);
           }
-        }
+          return incomingItems;
+        });
       }
+    }
 
-      if (incomingItems.length === 0 && dt.files && dt.files.length > 0) {
-        for (let i = 0; i < dt.files.length; i += 1) {
-          const file = dt.files[i];
-          if (!isNonEmptyFile(file)) continue;
-          incomingItems.push(
-            createUploadItem(file, file.webkitRelativePath || file.name)
-          );
-        }
+    if (incomingItems.length === 0 && dt.files && dt.files.length > 0) {
+      for (let i = 0; i < dt.files.length; i += 1) {
+        const file = dt.files[i];
+        if (!isNonEmptyFile(file)) continue;
+        incomingItems.push(
+          createUploadItem(file, file.webkitRelativePath || file.name)
+        );
       }
+    }
 
-      return incomingItems;
-    },
-    []
-  );
+    return Promise.resolve(incomingItems);
+  }
 
-  const handleDrop = useCallback(
-    async (event: DragEvent<HTMLElement>) => {
-      event.preventDefault();
-      setIsDragging(false);
-      const dt = event.dataTransfer;
-      if (!dt) return;
-      const incomingItems = await collectDroppedItems(dt);
+  function handleDrop(event: DragEvent<HTMLElement>) {
+    event.preventDefault();
+    setIsDragging(false);
+    const dt = event.dataTransfer;
+    if (!dt) return;
+    collectDroppedItems(dt).then(function (incomingItems) {
       addIncomingItems(incomingItems);
-    },
-    [addIncomingItems, collectDroppedItems]
-  );
+    });
+  }
 
-  const handleDragOver = useCallback((event: DragEvent<HTMLElement>) => {
+  function handleDragOver(event: DragEvent<HTMLElement>) {
     event.preventDefault();
     setIsDragging(true);
-  }, []);
+  }
 
-  const handleDragLeave = useCallback(() => {
+  function handleDragLeave() {
     setIsDragging(false);
-  }, []);
+  }
 
-  const handleFilesSelected = useCallback(
-    (files: FileList | File[]) => {
-      if (!files || (Array.isArray(files) && files.length === 0) || (!Array.isArray(files) && files.length === 0)) return;
-      const incoming = readFilesFromInput(files, false);
-      addIncomingItems(incoming);
-    },
-    [addIncomingItems, readFilesFromInput]
-  );
+  function handleFilesSelected(files: FileList | File[]) {
+    if (!files || (Array.isArray(files) && files.length === 0) || (!Array.isArray(files) && files.length === 0)) return;
+    const incoming = readFilesFromInput(files, false);
+    addIncomingItems(incoming);
+  }
 
-  const handleFolderSelected = useCallback(
-    (files: FileList | File[]) => {
-      if (!files || (Array.isArray(files) && files.length === 0) || (!Array.isArray(files) && files.length === 0)) return;
-      const incoming = readFilesFromInput(files, true);
-      addIncomingItems(incoming);
-    },
-    [addIncomingItems, readFilesFromInput]
-  );
+  function handleFolderSelected(files: FileList | File[]) {
+    if (!files || (Array.isArray(files) && files.length === 0) || (!Array.isArray(files) && files.length === 0)) return;
+    const incoming = readFilesFromInput(files, true);
+    addIncomingItems(incoming);
+  }
 
-  useEffect(() => {
+  useEffect(function () {
     if (folderInputRef.current) {
       folderInputRef.current.setAttribute("webkitdirectory", "");
       folderInputRef.current.setAttribute("directory", "");
     }
   }, []);
 
-  // Fix for useMetadataStream type mismatch
-  const handleMetadataUpdate = useCallback((metadata: Record<string, unknown>) => {
+  const handleMetadataUpdate = useCallback(function handleMetadataUpdate(metadata: Record<string, unknown>) {
     setMetadata(metadata as Record<string, FileInfo>);
   }, []);
 

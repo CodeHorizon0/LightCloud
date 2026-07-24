@@ -241,9 +241,8 @@
   border: 0;
 }
 
-
 .previewMarkdown {
-  padding: 0px 20px;
+  padding: 0 20px;
   font-size: 14px;
   line-height: 1.6;
   color: #e7eaf0;
@@ -259,7 +258,8 @@
 .previewMarkdown h4,
 .previewMarkdown h5,
 .previewMarkdown h6 {
-  margin: 16px 0 8px;
+  margin-top: 24px;
+  margin-bottom: 16px;
   font-weight: 600;
   line-height: 1.25;
   color: #eef2ff;
@@ -268,24 +268,44 @@
 .previewMarkdown h1 {
   font-size: 26px;
   border-bottom: 1px solid #2d333b;
-  margin: 0;
-  padding: 10px 0;
+  padding-bottom: 0.3em;
+  margin-bottom: 16px;
 }
 
 .previewMarkdown h2 {
   font-size: 22px;
   border-bottom: 1px solid #2d333b;
-  margin: 0;
-  padding: 8px 0;
+  padding-bottom: 0.3em;
+  margin-bottom: 16px;
 }
 
-.previewMarkdown h3 { font-size: 18px; }
-.previewMarkdown h4 { font-size: 16px; }
-.previewMarkdown h5 { font-size: 14px; }
-.previewMarkdown h6 { font-size: 13px; color: #9ca3af; }
+.previewMarkdown h3 {
+  font-size: 18px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.previewMarkdown h4 {
+  font-size: 16px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.previewMarkdown h5 {
+  font-size: 14px;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
+
+.previewMarkdown h6 {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-top: 24px;
+  margin-bottom: 16px;
+}
 
 .previewMarkdown p {
-  margin: 0 0 12px 0;
+  margin: 0 0 16px 0;
 }
 
 .previewMarkdown a {
@@ -300,7 +320,7 @@
 .previewMarkdown ul,
 .previewMarkdown ol {
   padding-left: 24px;
-  margin: 0 0 12px 0;
+  margin: 0 0 16px 0;
 }
 
 .previewMarkdown li {
@@ -313,7 +333,7 @@
 }
 
 .previewMarkdown blockquote {
-  margin: 0 0 12px 0;
+  margin: 0 0 16px 0;
   padding: 0 16px;
   border-left: 4px solid #6366f1;
   color: #cbd5e1;
@@ -332,7 +352,7 @@
   padding: 12px 16px;
   border-radius: 6px;
   overflow-x: auto;
-  margin: 0 0 12px 0;
+  margin: 0 0 16px 0;
 }
 
 .previewMarkdown pre code {
@@ -346,7 +366,7 @@
 .previewMarkdown table {
   border-collapse: collapse;
   width: 100%;
-  margin: 0 0 12px 0;
+  margin: 0 0 16px 0;
   font-size: 13px;
 }
 
@@ -375,7 +395,7 @@
 .previewMarkdown hr {
   border: 0;
   border-top: 1px solid #2d333b;
-  margin: 16px 0;
+  margin: 24px 0;
 }
 
 .previewMarkdown .task-list-item {
@@ -386,44 +406,73 @@
   margin-right: 6px;
 }
 
-@media (max-width: 900px) {
-  .previewModal {
-    max-height: calc(100vh - 16px);
-    height: calc(100vh - 16px);
-  }
+.previewMarkdown kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 0.85em;
+  line-height: 1.4;
+  color: #e7eaf0;
+  background-color: #1c2128;
+  border: 1px solid #3c3f45;
+  border-radius: 4px;
+  box-shadow: inset 0 -1px 0 #3c3f45;
+}
+
+.previewMarkdown details {
+  margin: 0 0 16px 0;
+}
+
+.previewMarkdown summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #eef2ff;
+}
+
+.previewMarkdown summary:hover {
+  color: #58a6ff;
+}
+
+.previewMarkdown abbr {
+  border-bottom: 1px dashed #6b7280;
+  cursor: help;
+}
+
+.previewMarkdown mark {
+  background: #ffd60a;
+  color: #0b0f14;
+  padding: 0 2px;
+}
+
+.previewMarkdown ins {
+  text-decoration: underline;
+  color: #58a6ff;
+}
+
+.previewMarkdown del {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+.previewMarkdown sub {
+  vertical-align: sub;
+  font-size: 0.8em;
+}
+
+.previewMarkdown sup {
+  vertical-align: super;
+  font-size: 0.8em;
+}
+
+.previewMarkdown div {
+  margin: 0 0 16px 0;
+}
+
+.previewMarkdown span {
+  display: inline;
 }
 
 @media (max-width: 760px) {
-  .previewOverlay {
-    padding: 6px;
-  }
-
-  .previewModal {
-    max-height: calc(100vh - 12px);
-    height: calc(100vh - 12px);
-    border-radius: 12px;
-  }
-
-  .previewBody {
-    min-height: 220px;
-  }
-
-  .previewText {
-    padding: 10px;
-    font-size: 12px;
-  }
-
-  .previewAudioShell {
-    padding: 12px;
-  }
-
-  .previewAudio {
-    width: 100%;
-    max-width: 100%;
-  }
-
   .previewMarkdown {
-    padding: 0px 5px;
+    padding: 0 5px;
   }
 }
-
