@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-from typing import Any, AsyncIterator
+from typing import AsyncIterator
 
 from fastapi import APIRouter, Request
 from fastapi.responses import Response

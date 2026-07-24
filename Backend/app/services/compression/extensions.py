@@ -12,7 +12,7 @@ TEXT_EXTENSIONS = {
     ".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx",
 
     # Python
-    ".py", ".pyw", ".pyi",
+    ".py", ".pyw", ".pyi", "pyc"
 
     # C/C++
     ".c", ".h", ".cc", ".cpp", ".cxx", ".hpp",

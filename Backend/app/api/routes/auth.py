@@ -15,12 +15,11 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 COOKIE_NAME = "access_token"
 
-
 def _get_username_from_payload(payload: dict | None) -> str | None:
     if not payload:
         return None
 
-    username = payload.get("sub") or payload.get("username") or payload.get("email")
+    username = payload.get("sub") or payload.get("username") 
     if isinstance(username, str) and username.strip():
         return username.strip()
 

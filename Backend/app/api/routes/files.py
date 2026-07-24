@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import math
 import contextlib
 import hashlib
 from datetime import datetime, timezone
