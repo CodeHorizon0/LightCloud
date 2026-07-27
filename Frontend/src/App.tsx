@@ -39,6 +39,10 @@ import {
 } from "./utils/storage";
 
 interface User {
+  id?: string; // uuid 4
+  avatar?: string; // url
+  storage_current_size?: number;
+  storage_limit_size?: number;
   username: string;
 }
 
@@ -53,6 +57,7 @@ interface PreviewItem {
   title: string;
   size: number;
   url: string;
+  additional_metadata?: string;
 }
 
 type StatusTone = "muted" | "warn" | "ok" | "danger";
