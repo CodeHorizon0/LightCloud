@@ -16,7 +16,6 @@
   padding: 4px 8px;
   border: 1px solid #3c3f45;
   border-radius: 8px;
-  background: transparent;
   backdrop-filter: blur(8px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   box-sizing: border-box;

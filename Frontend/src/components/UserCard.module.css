@@ -7,7 +7,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: transparent;
+  background-color: transparent;
   border: 1px solid #3c3f45;
   border-radius: 8px;
   padding: 4px 8px;
@@ -21,7 +21,7 @@
 }
 
 .trigger:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background-color: #ffffff0a;
 }
 
 .avatar {
@@ -42,11 +42,11 @@
   top: calc(100% + 12px);
   right: 0;
   min-width: 140px;
-  background: transparent;
+  background-color: transparent;
   backdrop-filter: blur(8px);
   border: 1px solid #3c3f45;
   border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 10px 30px #00000059;
   padding: 2px;
   z-index: 50;
   display: flex;
@@ -65,34 +65,34 @@
   font-size: 13px;
   cursor: pointer;
   transition: 0.2s ease;
-  background: transparent;
+  background-color: transparent;
   color: #e5e6e8;
 }
 
 .dropdownButton:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background-color: #ffffff0a;
 }
 
 .logoutButton {
   composes: dropdownButton;
   color: #c7d2fe;
-  background: #1e1b4b;
+  background-color: #1e1b4b;
   border: 1px solid #4f46e5;
 }
 
 .logoutButton:hover {
-  background: #312e81;
+  background-color: #312e81;
 }
 
 .deleteButton {
   composes: dropdownButton;
   color: #ffb4c0;
-  background: #2a1a20;
-  border: 1px solid rgba(255, 92, 119, 0.25);
+  background-color: #2a1a20;
+  border: 1px solid #ff5c7740;
 }
 
 .deleteButton:hover {
-  background: #351c26;
+  background-color: #351c26;
 }
 
 @media (max-width: 760px) {

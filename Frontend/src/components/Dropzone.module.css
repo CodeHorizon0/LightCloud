@@ -8,13 +8,13 @@
   text-align: center;
   user-select: none;
   border: 1.5px dashed #6b7280;
-  background: rgba(255, 255, 255, 0.02);
+  background-color: #ffffff05;
   transition: 0.2s ease;
 }
 
 .dropzoneActive {
   border-color: #6366f1;
-  background: rgba(99, 102, 241, 0.08);
+  background-color: #6366f114;
 }
 
 .dropzoneTitle {
