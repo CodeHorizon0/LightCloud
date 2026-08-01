@@ -8,29 +8,29 @@
 
 .primaryButton,
 .ghostButton {
-  appearance: none;
-  border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: 4px;
   padding: 4px;
   margin: 2px 0;
   font-weight: 600;
   font-size: 12px;
   line-height: 1.15;
+  min-width: 0;
   cursor: pointer;
   user-select: none;
+  appearance: none;
+  border: none;
   transition: 0.2s ease;
   width: fit-content;
-  min-width: 0;
   white-space: nowrap;
 }
 
 .primaryButton {
-  background: #6366f1;
+  background-color: #6366f1;
   color: #fff;
 }
 
 .primaryButton:hover {
-  background: #4f46e5;
+  background-color: #4f46e5;
 }
 
 .primaryButton:disabled {
@@ -39,17 +39,17 @@
 }
 
 .ghostButton {
-  background: transparent;
+  background-color: transparent;
   border-color: #3c3f45;
   color: #e5e6e8;
 }
 
 .ghostButton:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background-color: #ffffff0a;
 }
 
 .ghostButton:disabled {
-  opacity: 0.55;
+  opacity: 0.75;
   cursor: not-allowed;
 }
 

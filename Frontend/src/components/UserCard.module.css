@@ -30,6 +30,8 @@
 
 .username {
   max-width: 110px;
+  font-weight: 700;
+  font-style: normal;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
