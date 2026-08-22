@@ -374,7 +374,6 @@ def _parse_range_header(range_header: str | None, file_size: int) -> tuple[int, 
 
         return start, end
 
-    # suffix range: bytes=-N
     try:
         suffix_length = int(end_text)
     except ValueError as exc:
@@ -419,8 +418,9 @@ async def _build_progressive_image_preview(
 ) -> tuple[bytes, str] | None:
     def _render() -> tuple[bytes, str] | None:
         try:
-            with Image.open(stored_path) as image:
-                image = ImageOps.exif_transpose(image)
+            with Image.open(stored_path) as img:
+                image = ImageOps.exif_transpose(img)
+                assert image is not None
                 image.load()
 
                 if image.mode not in ("RGB", "L"):
@@ -435,11 +435,8 @@ async def _build_progressive_image_preview(
                 elif image.mode == "L":
                     image = image.convert("RGB")
 
-                try:
-                    resample = Image.Resampling.LANCZOS  # type: ignore[attr-defined]
-                except AttributeError:
-                    resample = Image.LANCZOS  # type: ignore[attr-defined]
-
+                resample = Image.LANCZOS
+                print(resample)
                 image.thumbnail((max_side, max_side), resample)
 
                 output = io.BytesIO()

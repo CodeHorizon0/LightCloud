@@ -63,7 +63,7 @@ def load_settings(config_path: Path = CONFIG_PATH) -> Settings:
     max_filename_depth = int(config.get("max_filename_depth", 10))
 
     jwt_secret = config.get("jwt_secret", "CHANGE_THIS_SECRET_TO_SOMETHING_STRONG")
-    jwt_algorithm = config.get("jwt_algorithm", "HS256")   # <-- чтение алгоритма
+    jwt_algorithm = config.get("jwt_algorithm", "HS256")  
     cookie_secure = bool(config.get("cookie_secure", False))
     access_token_expire_minutes = int(config.get("access_token_expire_minutes", 60))
 
