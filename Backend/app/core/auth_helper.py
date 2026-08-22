@@ -3,11 +3,15 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 from typing import Any
+from uuid import UUID, uuid4
 
 from jose import ExpiredSignatureError, JWTError, jwt
 
 _SECRET_KEY: str | None = None
-_ALGORITHM: str | None = None        
+_ALGORITHM: str | None = None
+_ISSUER: str = "lc-backend"
+_AUDIENCE: str = "lc-api-user"
+
 
 def set_secret_key(key: str) -> None:
     global _SECRET_KEY
@@ -31,19 +35,35 @@ def _get_algorithm() -> str:
     return _ALGORITHM
 
 
-def create_access_token(subject: str, expires_delta: timedelta | None = None) -> str:
+def create_access_token(
+    user_id: UUID | str,
+    username: str,
+    token_version: int,
+    expires_delta: timedelta | None = None,
+) -> str:
     expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=60))
     payload = {
-        "sub": subject,
-        "exp": expire,
+        "sub": str(user_id),
+        "username": username,
+        "jti": uuid4().hex,
+        "iss": _ISSUER,
+        "aud": _AUDIENCE,
         "iat": datetime.now(timezone.utc),
+        "exp": expire,
+        "token_version": token_version,
     }
     return jwt.encode(payload, _get_secret_key(), algorithm=_get_algorithm())
 
 
 def verify_access_token_with_status(token: str) -> tuple[dict[str, Any] | None, str]:
     try:
-        payload = jwt.decode(token, _get_secret_key(), algorithms=[_get_algorithm()])
+        payload = jwt.decode(
+            token,
+            _get_secret_key(),
+            algorithms=[_get_algorithm()],
+            issuer=_ISSUER,
+            audience=_AUDIENCE,
+        )
         if not isinstance(payload, dict):
             return None, "invalid"
         return payload, "ok"

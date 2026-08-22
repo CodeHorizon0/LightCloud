@@ -1,3 +1,4 @@
+# app/models.py
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -31,7 +32,6 @@ class DeleteFilesRequest(BaseModel):
     filenames: list[str] = PydanticField(min_length=1)
 
 
-# Metadata job
 @dataclass(slots=True)
 class MetadataJob:
     filename: str
@@ -41,7 +41,6 @@ class MetadataJob:
     future: asyncio.Future[UploadResult]
 
 
-# Pydantic models for users
 class UserCreate(BaseModel):
     username: str = PydanticField(min_length=3, max_length=32)
     password: str = PydanticField(min_length=8, max_length=128)
@@ -57,7 +56,6 @@ class UserLogin(BaseModel):
     password: str = PydanticField(min_length=8, max_length=128)
 
 
-# SQLModel tables
 class User(SQLModel, table=True):
     __tablename__ = "users"
 
@@ -79,6 +77,7 @@ class User(SQLModel, table=True):
         nullable=False,
         max_length=255,
     )
+    token_version: int = Field(default=1, nullable=False)
 
     # Uncommented in future versions
     # # Storage size

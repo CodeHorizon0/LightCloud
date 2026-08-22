@@ -1,3 +1,4 @@
+# app/api/routes/auth.py
 from __future__ import annotations
 
 from datetime import timedelta
@@ -8,21 +9,20 @@ from fastapi.responses import JSONResponse
 
 from app.core.auth_helper import create_access_token, verify_access_token_with_status
 from app.core.passwords import verify_password
-from app.db.database import create_user, delete_user, get_user
+from app.db.database import create_user, delete_user, get_user, increment_token_version
 from app.models import UserCreate, UserLogin
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 COOKIE_NAME = "access_token"
 
+
 def _get_username_from_payload(payload: dict | None) -> str | None:
     if not payload:
         return None
-
-    username = payload.get("sub") or payload.get("username") 
+    username = payload.get("username")
     if isinstance(username, str) and username.strip():
         return username.strip()
-
     return None
 
 
@@ -62,7 +62,11 @@ async def register(user: UserCreate, request: Request):
         )
 
     storage_manager = request.app.state.storage_manager
-    await storage_manager.ensure_user_storage(user.username)
+    try:
+        await storage_manager.ensure_user_storage(user.username)
+    except Exception:
+        await delete_user(user.username)
+        raise HTTPException(status_code=500, detail="Failed to create user storage")
 
     return JSONResponse(
         content=jsonable_encoder(new_user),
@@ -88,7 +92,9 @@ async def login(request: Request, user: UserLogin):
         )
 
     access_token = create_access_token(
-        subject=user.username,
+        user_id=db_user["id"],
+        username=user.username,
+        token_version=db_user["token_version"],
         expires_delta=timedelta(minutes=settings.access_token_expire_minutes),
     )
 
@@ -127,18 +133,32 @@ async def logout(request: Request):
     return response
 
 
+@router.post("/logout-all")
+async def logout_all(request: Request):
+    username = _verify_cookie_token(request)
+    db_user = await get_user(username)
+    if not db_user:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    await increment_token_version(db_user["id"])
+    response = JSONResponse({"msg": "Logged out from all devices"}, status_code=200)
+    response.delete_cookie(COOKIE_NAME, path="/")
+    return response
+
+
 @router.delete("/delete")
 async def delete_account(request: Request):
     username = _verify_cookie_token(request)
 
-    storage_manager = request.app.state.storage_manager
-    storage_deleted = await storage_manager.delete_user_storage(username)
-    if not storage_deleted:
-        raise HTTPException(status_code=500, detail="Failed to delete user storage")
-
     deleted = await delete_user(username)
     if not deleted:
         raise HTTPException(status_code=404, detail="User not found")
+
+    storage_manager = request.app.state.storage_manager
+    storage_deleted = await storage_manager.delete_user_storage(username)
+    if not storage_deleted:
+
+        raise HTTPException(status_code=500, detail="Failed to delete user storage")
 
     response = JSONResponse({"msg": "Account deleted"}, status_code=200)
     response.delete_cookie(COOKIE_NAME, path="/")

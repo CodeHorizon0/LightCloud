@@ -409,7 +409,6 @@ async def _read_file_range(path: Path, start: int, end: int, chunk_size: int) ->
     return bytes(buffer)
 
 
-
 async def _build_progressive_image_preview(
     stored_path: Path,
     *,
@@ -436,7 +435,6 @@ async def _build_progressive_image_preview(
                     image = image.convert("RGB")
 
                 resample = Image.LANCZOS
-                print(resample)
                 image.thumbnail((max_side, max_side), resample)
 
                 output = io.BytesIO()
@@ -506,7 +504,6 @@ async def _open_decompressed_stream(compression_manager, stored_path: Path, *, m
     if stream is None:
         raise HTTPException(status_code=500, detail="Failed to open decompressed stream")
     return stream
-
 
 
 async def _materialize_decompressed_preview_path(
@@ -631,8 +628,7 @@ async def _serve_stored_file(request: Request, filename: str, *, inline: bool) -
                         max_size=settings.max_file_size,
                     )
                 except Exception:
-                    preview_source = stored_path
-                    cleanup_preview_source = False
+                    raise HTTPException(status_code=500, detail="Failed to decompress file for preview")
 
             try:
                 preview = await _build_progressive_image_preview(preview_source, quality=preview_quality)
@@ -673,9 +669,7 @@ async def _serve_stored_file(request: Request, filename: str, *, inline: bool) -
                         )
                         range_size = range_target.stat().st_size
                     except Exception:
-                        range_target = stored_path
-                        cleanup_range_target = False
-                        range_size = stat.st_size
+                        raise HTTPException(status_code=500, detail="Failed to decompress file for range request")
 
                 try:
                     parsed = _parse_range_header(range_header, range_size)

@@ -1,4 +1,7 @@
+# app/db/database.py
 from __future__ import annotations
+
+from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -26,7 +29,7 @@ async def create_user(username: str, password: str):
     hash_pw = hash_password(password)
 
     async with SessionLocal() as session:
-        user = User(username=username, password_hash=hash_pw)
+        user = User(username=username, password_hash=hash_pw, token_version=1)
         session.add(user)
 
         try:
@@ -55,7 +58,36 @@ async def get_user(username: str):
             "id": user.id,
             "username": user.username,
             "password_hash": user.password_hash,
+            "token_version": user.token_version,
         }
+
+
+async def get_user_by_id(user_id: UUID):
+    async with SessionLocal() as session:
+        result = await session.execute(select(User).where(User.id == user_id))
+        user = result.scalar_one_or_none()
+
+        if user is None:
+            return None
+
+        return {
+            "id": user.id,
+            "username": user.username,
+            "password_hash": user.password_hash,
+            "token_version": user.token_version,
+        }
+
+
+async def increment_token_version(user_id: UUID) -> int:
+    async with SessionLocal() as session:
+        result = await session.execute(select(User).where(User.id == user_id))
+        user = result.scalar_one_or_none()
+        if user is None:
+            raise ValueError("User not found")
+        user.token_version += 1
+        await session.commit()
+        await session.refresh(user)
+        return user.token_version
 
 
 async def delete_user(username: str):

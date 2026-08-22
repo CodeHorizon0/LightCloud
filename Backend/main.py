@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import asyncio
 import gc
+import json
+import secrets
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, Request
@@ -14,7 +17,7 @@ from app.api.routes.auth import router as auth_router
 from app.api.routes.files import router as files_router
 from app.api.routes.metadata import router as metadata_router
 from app.core import auth_helper
-from app.core.settings import load_settings
+from app.core.settings import CONFIG_PATH, load_settings
 from app.db.database import init_db
 from app.middleware import JWTMiddleware
 from app.services.compression.manager import CompressionManager
@@ -22,7 +25,23 @@ from app.services.storage import UserStorageManager
 
 settings = load_settings()
 
-# Lifespan
+
+def _ensure_strong_jwt_secret(settings, config_path: Path):
+    weak_secrets = {"CHANGE_THIS_SECRET_TO_SOMETHING_STRONG", ""}
+    if settings.jwt_secret in weak_secrets or len(settings.jwt_secret) < 32:
+        new_secret = secrets.token_urlsafe(32)
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = json.load(f)
+        config["jwt_secret"] = new_secret
+        with open(config_path, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=2, ensure_ascii=False)
+        settings = load_settings()
+    return settings
+
+
+settings = _ensure_strong_jwt_secret(settings, CONFIG_PATH)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     auth_helper.set_secret_key(settings.jwt_secret)
@@ -53,7 +72,7 @@ async def lifespan(app: FastAPI):
         await idle_task
         print("[shutdown] Shutdown complete.")
 
-# Idle handler
+
 async def idle_cleanup_task(app: FastAPI):
     settings = app.state.settings
     threshold = settings.idle_threshold_seconds
@@ -78,10 +97,10 @@ async def idle_cleanup_task(app: FastAPI):
         elif idle_time <= threshold and app.state.is_idle:
             pass
 
-# === FastAPI init
+
 app = FastAPI(title="LightCloud", lifespan=lifespan)
 
-# Idle middleware
+
 @app.middleware("http")
 async def activity_middleware(request: Request, call_next):
     if app.state.is_idle:
@@ -90,7 +109,7 @@ async def activity_middleware(request: Request, call_next):
     app.state.last_request_time = time.time()
     return await call_next(request)
 
-# Middleware
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_allow_origins,
@@ -101,12 +120,10 @@ app.add_middleware(
 app.add_middleware(JWTMiddleware)
 app.add_middleware(GZipMiddleware, minimum_size=settings.gzip_minimum_size)
 
-# Routes
 app.include_router(auth_router)
 app.include_router(files_router)
 app.include_router(metadata_router)
 
-# Uvicorn run
 if __name__ == "__main__":
     uvicorn.run(
         app,
