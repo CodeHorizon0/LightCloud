@@ -1,3 +1,4 @@
+# app/services/storage.py
 from __future__ import annotations
 
 import asyncio
@@ -16,19 +17,18 @@ from utils import encode_key
 @dataclass(slots=True)
 class UserStorage:
     username: str
-    root_dir: Path                
-    metadata_file: Path                 
-    metadata_store: MetadataStore       
-    file_lock: AsyncFileLock            
-    lock: asyncio.Lock = field(default_factory=asyncio.Lock) 
-    deleted: bool = False              
+    root_dir: Path
+    metadata_file: Path
+    metadata_store: MetadataStore
+    file_lock: AsyncFileLock
+    lock: asyncio.Lock = field(default_factory=asyncio.Lock)
+    deleted: bool = False
 
 
 class UserStorageManager:
     def __init__(self, storage_root: Path) -> None:
         self._storage_root = storage_root
-        self._registry_lock = asyncio.Lock()         
-        self._storages: dict[str, UserStorage] = {}  
+        self._locks_dir = storage_root / ".locks"
 
     def _user_key(self, username: str) -> str:
         normalized = username.strip()
@@ -40,7 +40,7 @@ class UserStorageManager:
         safe_key = self._user_key(username)
         root_dir = self._storage_root / safe_key
         metadata_file = root_dir / "metadata.json"
-        lock_file = root_dir / ".storage.lock"
+        lock_file = self._locks_dir / f"{safe_key}.lock"
         return root_dir, metadata_file, lock_file
 
     async def get_storage(self, username: str) -> UserStorage:
@@ -48,27 +48,19 @@ class UserStorageManager:
         if not normalized:
             raise ValueError("Username is empty")
 
-        async with self._registry_lock:
-            storage = self._storages.get(normalized)
-            if storage is None:
-                root_dir, metadata_file, lock_file = self._build_storage_paths(normalized)
-                storage = UserStorage(
-                    username=normalized,
-                    root_dir=root_dir,
-                    metadata_file=metadata_file,
-                    metadata_store=MetadataStore(metadata_file),
-                    file_lock=AsyncFileLock(lock_file),
-                )
-                self._storages[normalized] = storage
-            return storage
+        root_dir, metadata_file, lock_file = self._build_storage_paths(normalized)
+        return UserStorage(
+            username=normalized,
+            root_dir=root_dir,
+            metadata_file=metadata_file,
+            metadata_store=MetadataStore(metadata_file),
+            file_lock=AsyncFileLock(lock_file),
+        )
 
     async def ensure_user_storage(self, username: str) -> UserStorage:
         storage = await self.get_storage(username)
 
         async with storage.file_lock:
-            if storage.deleted:
-                storage.deleted = False
-
             await asyncio.to_thread(storage.root_dir.mkdir, parents=True, exist_ok=True)
             await storage.metadata_store.ensure_initialized()
             return storage
@@ -79,7 +71,7 @@ class UserStorageManager:
         if storage.deleted:
             return None
 
-        if not storage.root_dir.exists():
+        if not await asyncio.to_thread(storage.root_dir.exists):
             return None
 
         return storage
@@ -129,40 +121,16 @@ class UserStorageManager:
                 return True
             storage.deleted = True
 
-        delay = 0.05
-        last_exc: OSError | None = None
+            if not await asyncio.to_thread(root_dir.exists):
+                return True
 
-        def purge_sync() -> None:
-            self._remove_path_sync(metadata_file)
-            self._remove_path_sync(lock_file)
-            self._remove_path_sync(root_dir)
+            def purge_sync() -> None:
+                self._remove_path_sync(metadata_file)
+                self._remove_path_sync(root_dir)
 
-        for attempt in range(10):
-            try:
-                await asyncio.to_thread(purge_sync)
-                break
-            except FileNotFoundError:
-                break
-            except (PermissionError, OSError) as exc:
-                last_exc = exc
-                if attempt == 9:
-                    break
-                await asyncio.sleep(delay)
-                delay = min(delay * 2, 0.75)
+            await asyncio.to_thread(purge_sync)
 
-        async with self._registry_lock:
-            self._storages.pop(storage.username, None)
+            if await asyncio.to_thread(root_dir.exists) or await asyncio.to_thread(metadata_file.exists):
+                return False
 
-        if metadata_file.exists() or root_dir.exists() or lock_file.exists():
-            return False
-
-        if last_exc is not None and (metadata_file.exists() or root_dir.exists() or lock_file.exists()):
-            return False
-
-        return True
-
-    async def cleanup_missing(self, username: str) -> None:
-        storage = await self.get_storage(username)
-        if not storage.root_dir.exists():
-            async with self._registry_lock:
-                self._storages.pop(storage.username, None)
+            return True
