@@ -1,6 +1,7 @@
 # app/db/database.py
 from __future__ import annotations
 
+import asyncio
 from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
@@ -16,6 +17,10 @@ engine = create_async_engine(DB_PATH, echo=False)
 SessionLocal = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
+class UserAlreadyExistsError(Exception):
+    pass
+
+
 async def init_db() -> None:
     async with engine.begin() as conn:
         await conn.run_sync(User.metadata.create_all)
@@ -26,7 +31,7 @@ async def create_user(username: str, password: str):
     if not username:
         return None
 
-    hash_pw = hash_password(password)
+    hash_pw = await asyncio.to_thread(hash_password, password)
 
     async with SessionLocal() as session:
         user = User(username=username, password_hash=hash_pw, token_version=1)
@@ -37,7 +42,7 @@ async def create_user(username: str, password: str):
             await session.refresh(user)
         except IntegrityError:
             await session.rollback()
-            return None
+            raise UserAlreadyExistsError("User already exists")
 
         return {"id": user.id, "username": user.username}
 

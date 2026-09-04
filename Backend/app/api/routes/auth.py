@@ -1,6 +1,7 @@
 # app/api/routes/auth.py
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 
 from fastapi import APIRouter, HTTPException, Request
@@ -9,40 +10,12 @@ from fastapi.responses import JSONResponse
 
 from app.core.auth_helper import create_access_token, verify_access_token_with_status
 from app.core.passwords import verify_password
-from app.db.database import create_user, delete_user, get_user, increment_token_version
+from app.db.database import UserAlreadyExistsError, create_user, delete_user, get_user, increment_token_version
 from app.models import UserCreate, UserLogin
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 COOKIE_NAME = "access_token"
-
-
-def _get_username_from_payload(payload: dict | None) -> str | None:
-    if not payload:
-        return None
-    username = payload.get("username")
-    if isinstance(username, str) and username.strip():
-        return username.strip()
-    return None
-
-
-def _verify_cookie_token(request: Request) -> str:
-    token = request.cookies.get(COOKIE_NAME)
-    if not token:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-
-    payload, status = verify_access_token_with_status(token)
-    username = _get_username_from_payload(payload)
-
-    if not username:
-        if status == "expired":
-            raise HTTPException(
-                status_code=401,
-                detail={"code": "token_expired", "redirect_to": "/login"},
-            )
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    return username
 
 
 @router.post("/register")
@@ -54,7 +27,14 @@ async def register(user: UserCreate, request: Request):
             status_code=400,
         )
 
-    new_user = await create_user(user.username, user.password)
+    try:
+        new_user = await create_user(user.username, user.password)
+    except UserAlreadyExistsError:
+        return JSONResponse(
+            {"detail": "User already exists"},
+            status_code=409,
+        )
+
     if not new_user:
         return JSONResponse(
             {"detail": "Failed to create user"},
@@ -85,7 +65,14 @@ async def login(request: Request, user: UserLogin):
         )
 
     password_hash = db_user.get("password_hash")
-    if not password_hash or not verify_password(user.password, password_hash):
+    if not password_hash:
+        return JSONResponse(
+            {"detail": "Invalid credentials"},
+            status_code=401,
+        )
+
+    is_valid = await asyncio.to_thread(verify_password, user.password, password_hash)
+    if not is_valid:
         return JSONResponse(
             {"detail": "Invalid credentials"},
             status_code=401,
@@ -113,7 +100,13 @@ async def login(request: Request, user: UserLogin):
 
 @router.get("/me")
 async def me(request: Request):
-    username = _verify_cookie_token(request)
+    payload = getattr(request.state, "user", None)
+    if not payload or not isinstance(payload, dict):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    username = payload.get("username")
+    if not username:
+        raise HTTPException(status_code=401, detail="Invalid user data")
 
     db_user = await get_user(username)
     if not db_user:
@@ -135,7 +128,14 @@ async def logout(request: Request):
 
 @router.post("/logout-all")
 async def logout_all(request: Request):
-    username = _verify_cookie_token(request)
+    payload = getattr(request.state, "user", None)
+    if not payload or not isinstance(payload, dict):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    username = payload.get("username")
+    if not username:
+        raise HTTPException(status_code=401, detail="Invalid user data")
+
     db_user = await get_user(username)
     if not db_user:
         raise HTTPException(status_code=401, detail="User not found")
@@ -148,7 +148,13 @@ async def logout_all(request: Request):
 
 @router.delete("/delete")
 async def delete_account(request: Request):
-    username = _verify_cookie_token(request)
+    payload = getattr(request.state, "user", None)
+    if not payload or not isinstance(payload, dict):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    username = payload.get("username")
+    if not username:
+        raise HTTPException(status_code=401, detail="Invalid user data")
 
     deleted = await delete_user(username)
     if not deleted:
@@ -157,7 +163,6 @@ async def delete_account(request: Request):
     storage_manager = request.app.state.storage_manager
     storage_deleted = await storage_manager.delete_user_storage(username)
     if not storage_deleted:
-
         raise HTTPException(status_code=500, detail="Failed to delete user storage")
 
     response = JSONResponse({"msg": "Account deleted"}, status_code=200)

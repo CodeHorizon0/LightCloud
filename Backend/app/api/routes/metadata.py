@@ -1,3 +1,4 @@
+# app/api/routes/metadata.py
 from __future__ import annotations
 
 import asyncio
@@ -8,7 +9,6 @@ from fastapi import APIRouter, Request
 from fastapi.responses import Response
 from fastapi.responses import StreamingResponse
 
-from app.core.request_context import get_authenticated_username
 from app.services.sse import add_client, remove_client
 from app.services.storage import UserStorageManager
 
@@ -39,12 +39,14 @@ def _format_sse(
 
 @router.get("/metadata/stream")
 async def metadata_stream(request: Request):
-
     app = request.app
-    username = get_authenticated_username(request)
+    payload = getattr(request.state, "user", None)
+    if not payload or not isinstance(payload, dict):
+        return Response(status_code=401)
+    username = payload.get("username")
     if not username:
         return Response(status_code=401)
-    
+
     storage_manager: UserStorageManager = app.state.storage_manager
     storage = await storage_manager.ensure_user_storage(username)
     client_queue: asyncio.Queue[dict[str, str]] = asyncio.Queue(maxsize=256)
@@ -83,11 +85,11 @@ async def metadata_stream(request: Request):
             pass
         finally:
             await remove_client(app, username, client_queue)
-            
-    headers = {"Cache-Control": "no-cache","Connection": "keep-alive","X-Accel-Buffering": "no"}
+
+    headers = {"Cache-Control": "no-cache", "Connection": "keep-alive", "X-Accel-Buffering": "no"}
 
     return StreamingResponse(
-        event_generator(), 
-        media_type="text/event-stream", 
+        event_generator(),
+        media_type="text/event-stream",
         headers=headers
     )

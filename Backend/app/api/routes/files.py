@@ -1,3 +1,4 @@
+# app/api/routes/files.py
 from __future__ import annotations
 
 import asyncio
@@ -18,7 +19,6 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 from fastapi import APIRouter, File, HTTPException, Request, Response, UploadFile
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from app.core.request_context import get_authenticated_username
 from app.core.settings import Settings
 from app.models import DeleteFilesRequest
 from app.services.sse import broadcast_event
@@ -106,9 +106,12 @@ def _ensure_inside_storage(storage: UserStorage, path: Path) -> None:
 
 
 def _get_username(request: Request) -> str:
-    username = get_authenticated_username(request)
-    if not username:
+    payload = getattr(request.state, "user", None)
+    if not payload or not isinstance(payload, dict):
         raise HTTPException(status_code=401, detail="Not authenticated")
+    username = payload.get("username")
+    if not username:
+        raise HTTPException(status_code=401, detail="Invalid user data")
     return username
 
 

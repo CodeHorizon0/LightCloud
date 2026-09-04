@@ -6,7 +6,7 @@ import contextlib
 import shutil
 import stat
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 from app.services.file_lock import AsyncFileLock
@@ -21,7 +21,6 @@ class UserStorage:
     metadata_file: Path
     metadata_store: MetadataStore
     file_lock: AsyncFileLock
-    lock: asyncio.Lock = field(default_factory=asyncio.Lock)
     deleted: bool = False
 
 
