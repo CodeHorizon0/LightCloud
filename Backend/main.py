@@ -1,3 +1,4 @@
+# app/main.py
 from __future__ import annotations
 
 import asyncio
@@ -16,7 +17,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from app.api.routes.auth import router as auth_router
 from app.api.routes.files import router as files_router
 from app.api.routes.metadata import router as metadata_router
-from app.core import auth_helper
+from app.core.auth_helper import JWTService
 from app.core.settings import CONFIG_PATH, load_settings
 from app.db.database import init_db
 from app.middleware import JWTMiddleware
@@ -44,8 +45,13 @@ settings = _ensure_strong_jwt_secret(settings, CONFIG_PATH)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    auth_helper.set_secret_key(settings.jwt_secret)
-    auth_helper.set_algorithm(settings.jwt_algorithm)
+    jwt_service = JWTService(
+        secret_key=settings.jwt_secret,
+        algorithm=settings.jwt_algorithm,
+        issuer="lc-backend",
+        audience="lc-api-user",
+    )
+    app.state.jwt_service = jwt_service
 
     app.state.settings = settings
     app.state.storage_manager = UserStorageManager(settings.storage_dir)

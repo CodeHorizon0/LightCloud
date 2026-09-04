@@ -7,7 +7,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from app.core.auth_helper import verify_access_token_with_status
+from app.core.auth_helper import JWTService
 from app.db.database import get_user_by_id
 
 
@@ -44,7 +44,8 @@ class JWTMiddleware(BaseHTTPMiddleware):
         if not token:
             return JSONResponse({"detail": "Not authenticated"}, status_code=401)
 
-        payload, status = verify_access_token_with_status(token)
+        jwt_service: JWTService = request.app.state.jwt_service
+        payload, status = jwt_service.verify_token_with_status(token)
         if not payload:
             if status == "expired":
                 return JSONResponse(

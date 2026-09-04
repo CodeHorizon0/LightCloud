@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from app.core.auth_helper import create_access_token, verify_access_token_with_status
+from app.core.auth_helper import JWTService
 from app.core.passwords import verify_password
 from app.db.database import UserAlreadyExistsError, create_user, delete_user, get_user, increment_token_version
 from app.models import UserCreate, UserLogin
@@ -78,7 +78,8 @@ async def login(request: Request, user: UserLogin):
             status_code=401,
         )
 
-    access_token = create_access_token(
+    jwt_service: JWTService = request.app.state.jwt_service
+    access_token = jwt_service.create_access_token(
         user_id=db_user["id"],
         username=user.username,
         token_version=db_user["token_version"],
