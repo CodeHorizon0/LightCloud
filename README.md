@@ -1,5 +1,17 @@
 # LightCloud
-**LightCloud** - open source cloud storage writen on **[fastapi](https://fastapi.tiangolo.com/)** &amp; **[react](https://react.dev/)**. 
+
+---
+
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=py" height="40" alt="python logo"  /><img src="https://skillicons.dev/icons?i=sqlite" height="40" alt="fastapi logo"  />
+  <img src="https://skillicons.dev/icons?i=fastapi" height="40" alt="fastapi logo"  /><img src="https://skillicons.dev/icons?i=react" height="40" alt="react logo"  />
+  
+  **LightCloud** - open source cloud storage writen on **[fastapi](https://fastapi.tiangolo.com/)** &amp; **[react](https://react.dev/)**. 
+</div>
+
+
+
+---
 
 > [!WARNING]
 > This project was completed as part of a course project and is not recommended for use in a production environment until it has been significantly improved.
