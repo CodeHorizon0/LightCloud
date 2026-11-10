@@ -1,0 +1,41 @@
+{
+  "storage_dir": "storage/files",
+  "host": "127.0.0.1",
+  "port": 3000,
+  "allowed_hosts": [
+    "localhost",
+    "127.0.0.1"
+  ],
+  "cors": {
+    "allow_origins": [
+      "http://localhost:5173"
+    ],
+    "allow_methods": [
+      "*"
+    ],
+    "allow_headers": [
+      "*"
+    ],
+    "allow_credentials": true
+  },
+  "compression_level": 6,
+  "upload_worker": {
+    "chunk_size": 2097152
+  },
+  "compression": {
+    "scan_sample_size": 1048576,
+    "min_savings_percent": 3.0,
+    "max_source_size": 2147483648
+  },
+  "jwt_algorithm": "HS512",
+  "max_file_size_mb": 2000,
+  "max_batch_size_mb": 2000,
+  "max_upload_files": 10,
+  "max_filename_depth": 10,
+  "concurrent_uploads": 2,
+  "user_quota_mb": 20480,
+  "user_file_limit": 10000,
+  "cookie_secure": false,
+  "access_token_expire_minutes": 2880,
+  "database_file": "main.db"
+}
