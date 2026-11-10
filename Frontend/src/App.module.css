@@ -1,0 +1,30 @@
+.page {
+  width: 100%;
+  min-height: 100vh;
+  padding: var(--space-24) var(--space-16);
+}
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.panel {
+  margin-bottom: var(--space-8);
+  padding: var(--space-16);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: var(--space-6);
+  }
+
+  .panel {
+    padding: var(--space-6);
+    border-radius: var(--radius-md);
+  }
+}

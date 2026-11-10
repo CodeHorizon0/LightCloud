@@ -1,0 +1,134 @@
+.code {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  background: var(--code-bg);
+  color: var(--code-text);
+}
+.toolbar {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-6) var(--space-12);
+  border-bottom: 1px solid var(--border-muted);
+  color: var(--muted);
+  font-size: var(--font-12);
+}
+.lineCount {
+  color: var(--code-gutter);
+}
+.toolbar button {
+  min-height: var(--preview-control-size);
+  padding: var(--space-4) var(--space-10);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.toolbar button:hover {
+  background: var(--surface-hover);
+}
+.viewport {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  tab-size: 4;
+  font-family: var(--font-mono);
+  font-size: var(--font-13);
+  scrollbar-color: var(--border) var(--code-bg);
+}
+.viewport ::selection {
+  background: var(--code-selection);
+  color: inherit;
+}
+.lines {
+  padding-block: 0;
+}
+.line {
+  display: flex;
+  height: var(--code-line-height);
+  line-height: var(--code-line-height);
+  white-space: pre;
+}
+.line code {
+  font: inherit;
+  padding-right: var(--space-16);
+}
+.number {
+  position: sticky;
+  left: 0;
+  flex: 0 0 var(--code-gutter-width);
+  padding-right: var(--space-16);
+  text-align: right;
+  color: var(--code-gutter);
+  background: var(--code-bg);
+  user-select: none;
+}
+.code :global(.hljs-tag) {
+  color: var(--code-tag);
+}
+.code :global(.hljs-keyword),
+.code :global(.hljs-literal),
+.code :global(.hljs-name),
+.code :global(.hljs-meta) {
+  color: var(--code-keyword);
+}
+.code :global(.hljs-control) {
+  color: var(--code-control);
+}
+.code :global(.hljs-variable),
+.code :global(.hljs-params),
+.code :global(.hljs-attr),
+.code :global(.hljs-attribute),
+.code :global(.hljs-template-variable) {
+  color: var(--code-variable);
+}
+.code :global(.hljs-title),
+.code :global(.hljs-built_in),
+.code :global(.hljs-section) {
+  color: var(--code-function);
+}
+.code :global(.hljs-type),
+.code :global(.hljs-title.class_),
+.code :global(.hljs-class.hljs-title) {
+  color: var(--code-type);
+}
+.code :global(.hljs-string),
+.code :global(.hljs-template-tag) {
+  color: var(--code-string);
+}
+.code :global(.hljs-number),
+.code :global(.hljs-addition) {
+  color: var(--code-number);
+}
+.code :global(.hljs-symbol),
+.code :global(.hljs-variable.constant_) {
+  color: var(--code-constant);
+}
+.code :global(.hljs-regexp),
+.code :global(.hljs-deletion) {
+  color: var(--code-regexp);
+}
+.code :global(.hljs-selector-tag),
+.code :global(.hljs-selector-class),
+.code :global(.hljs-selector-id),
+.code :global(.hljs-selector-pseudo) {
+  color: var(--code-selector);
+}
+.code :global(.hljs-comment),
+.code :global(.hljs-quote) {
+  color: var(--code-comment);
+}
+@media (max-width: 360px) {
+  .lineCount {
+    display: none;
+  }
+}

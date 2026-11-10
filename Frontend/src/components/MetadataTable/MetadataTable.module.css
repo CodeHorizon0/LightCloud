@@ -1,0 +1,415 @@
+.tablePanel {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.tableToolbar {
+  display: flex;
+  gap: var(--space-6);
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-8) var(--space-10);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-wrap: wrap;
+}
+
+.tableToolbarInfo {
+  font-size: var(--font-12);
+  color: var(--muted);
+  min-width: 0;
+}
+
+.tableToolbarActions {
+  display: flex;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.tableEmptyState {
+  text-align: center;
+  color: var(--muted);
+  padding: var(--space-16) var(--space-10);
+}
+
+.tableActions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 5px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.rowCheckbox {
+  position: relative;
+  z-index: 2;
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 20px;
+  min-height: 20px;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 11px 11px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.rowCheckbox:hover {
+  border-color: var(--accent-hover);
+}
+
+.rowCheckbox:checked {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 9'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M1 4.5 4.5 8 11 1'/%3E%3C/svg%3E");
+}
+
+.rowCheckbox:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
+}
+
+.tableRowSelected {
+  background: var(--accent-muted);
+}
+
+.groupList {
+  display: grid;
+  gap: var(--space-8);
+  padding: var(--space-8);
+}
+
+.tableGroup {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.tableGroup[open] {
+  background: var(--surface);
+}
+
+.tableGroupSummary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-10);
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid var(--border-muted);
+  min-width: 0;
+}
+
+.tableGroupSummary::-webkit-details-marker {
+  display: none;
+}
+
+.tableGroupSummaryLeft,
+.tableGroupSummaryRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.tableGroupFolder {
+  color: var(--text);
+  font-size: var(--font-13);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tableGroupBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  padding: var(--space-2) var(--space-6);
+  border-radius: var(--radius-md);
+  background: var(--accent-muted);
+  color: var(--accent-text);
+  font-size: var(--font-12);
+  font-weight: 600;
+}
+
+.tableGroupHint,
+.tableGroupSelected {
+  font-size: var(--font-12);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.tableGroupBody {
+  display: grid;
+  gap: 0;
+}
+
+.tableGroupRow {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1.8fr) 92px 96px 104px 104px;
+  gap: 0;
+  align-items: center;
+}
+
+.tableGroupRow {
+  padding: 0 var(--space-10);
+  border-top: 1px solid var(--border-muted);
+  min-width: 0;
+}
+
+.tableGroupRow:hover {
+  background: var(--surface-hover);
+}
+
+.groupColSelect,
+.groupColPath,
+.groupColSize,
+.groupColCompression,
+.groupColPreview,
+.groupColActions {
+  min-width: 0;
+  padding: 0;
+  color: var(--muted);
+}
+
+.groupColSelect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.groupColPath {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  overflow: hidden;
+}
+
+.groupPathMain {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+  min-width: 0;
+}
+
+.groupPathName {
+  display: none;
+}
+
+.smallButton,
+.smallDangerButton,
+.ghostButton {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin: var(--space-2) 0;
+  font-weight: 600;
+  font-size: var(--font-12);
+  line-height: 1.15;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--transition),
+    border-color var(--transition),
+    color var(--transition);
+  width: fit-content;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.smallButton {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.smallButton:hover {
+  background: var(--accent-hover);
+}
+
+.smallDangerButton {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.smallDangerButton:hover {
+  background: var(--danger-hover);
+}
+
+.smallButton:disabled,
+.smallDangerButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ghostButton {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.ghostButton:hover {
+  background: var(--surface-hover);
+}
+
+.ghostButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .groupList {
+    padding: var(--space-6);
+    gap: var(--space-6);
+  }
+
+  .tableGroupSummary {
+    padding: var(--space-8);
+    align-items: flex-start;
+  }
+
+  .tableGroupSummaryRight {
+    justify-content: flex-start;
+  }
+
+  .tableGroupRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-6);
+    border: 1px solid var(--border-muted);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+  }
+
+  .groupColSelect {
+    order: 1;
+    flex: 0 0 18px;
+    padding: 0;
+  }
+
+  .groupColPath {
+    order: 2;
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+  }
+
+  .groupPathMain {
+    display: none;
+  }
+
+  .groupPathName {
+    display: inline;
+    color: var(--text);
+    font-size: var(--font-16);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .groupColSize {
+    order: 3;
+    flex: 0 0 auto;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .groupColCompression {
+    order: 4;
+    flex: 0 0 auto;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .groupColPreview {
+    order: 5;
+    flex: 0 0 auto;
+    padding: 0;
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .groupColActions {
+    order: 6;
+    flex: 0 0 auto;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .groupColSize::before,
+  .groupColCompression::before,
+  .groupColPreview::before,
+  .groupColActions::before {
+    display: none !important;
+  }
+
+  .tableActions {
+    gap: 5px;
+  }
+
+  .tablePanel {
+    overflow: hidden;
+  }
+
+  .tableActions {
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .tableToolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tableToolbarActions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .tableGroupHint {
+    display: none;
+  }
+
+  .tableGroupSummaryLeft {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    font-size: var(--font-16);
+    min-width: 0;
+    flex-wrap: nowrap;
+    flex-direction: row;
+  }
+}
+.actionIcon {
+  display: block;
+  width: 18px;
+  height: 18px;
+}

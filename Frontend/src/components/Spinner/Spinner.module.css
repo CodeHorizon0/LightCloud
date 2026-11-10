@@ -1,0 +1,36 @@
+.spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid var(--accent);
+  border-top-color: var(--accent-muted);
+  border-radius: 50%;
+  opacity: 0;
+  animation:
+    fadeIn 3s ease forwards,
+    spin 0.5s linear infinite;
+}
+
+.SpinnerContainer {
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

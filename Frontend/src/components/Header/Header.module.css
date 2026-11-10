@@ -1,0 +1,43 @@
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8) var(--space-10);
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-16);
+}
+
+.statCard {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-6);
+  min-width: 0;
+  padding: var(--space-4) var(--space-8);
+  border: 0;
+  border-radius: var(--radius-md);
+
+  box-sizing: border-box;
+}
+
+.statLabel {
+  display: block;
+  font-size: var(--font-13);
+  line-height: 1.2;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .header {
+    display: flex;
+    gap: var(--space-8);
+  }
+
+  .statCard {
+    padding: var(--space-4);
+  }
+
+  .statLabel {
+    font-size: var(--font-12);
+  }
+}

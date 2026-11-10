@@ -1,0 +1,42 @@
+{
+  "theme_color": "#111315",
+  "background_color": "#111315",
+  "icons": [
+    {
+      "purpose": "any",
+      "sizes": "192x192",
+      "src": "icon192.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "maskable",
+      "sizes": "512x512",
+      "src": "icon512_maskable.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "any",
+      "sizes": "512x512",
+      "src": "icon512_rounded.png",
+      "type": "image/png"
+    }
+  ],
+  "orientation": "any",
+  "display": "standalone",
+  "dir": "auto",
+  "lang": "ru-RU",
+  "name": "LightCloud",
+  "short_name": "LightCloud",
+  "start_url": "/",
+  "id": "/",
+  "scope": "/",
+  "description": "Облачное хранилище с оффлайн-доступом к сохранённым предпросмотрам",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "categories": [
+    "productivity",
+    "utilities"
+  ]
+}
